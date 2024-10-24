@@ -66,7 +66,7 @@ pip install mysqlclient
 
 
 
-### 7. Run the development server
+### 4. Run the development server
 
 Now you can run the development server:
 
