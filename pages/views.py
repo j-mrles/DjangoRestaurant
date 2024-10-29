@@ -11,3 +11,6 @@ def register(request):
 
 def reservation_page(request):
     return render(request, 'pages/ReservationPage.html')  
+
+def modify_reservation(request):
+    return render(request, "pages/ReservationPage.html")
