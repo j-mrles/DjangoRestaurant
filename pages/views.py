@@ -10,4 +10,4 @@ def register(request):
     return render(request, "pages/LoginComponent/RegisterPage.html", {})
 
 def reservation_page(request):
-    return render(request, 'pages/ReservationPage.html')  
+    return render(request, 'pages/ReservationComponent/ReservationPageGuest.html') 
