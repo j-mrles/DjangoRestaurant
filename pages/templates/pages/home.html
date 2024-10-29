@@ -1,10 +1,12 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Seahawk Restaurant</title>
-    <style>* {
+    <link rel="stylesheet" href="{% static 'css/styles.css'%}">
+    <!--<style>* {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
@@ -74,7 +76,7 @@
         max-width: 100%;
         height: auto;
         border-radius: 8px;
-    }</style>
+    }</style>-->
 </head>
 <body>
     <main class="main">
@@ -82,8 +84,8 @@
             <header>
                 <h1>Seahawk Restaurant</h1>
                 <nav>
-                    <a href="./pages/ReservationPage.html">Reservations</a>
-                    <a href="./login">Login</a>
+                    <a href="{% url 'reservation_page' %}">Reservations</a>
+                    <a href="{% url 'login_page'}">Login</a>
                 </nav>
             </header>
             <section class="welcome">
@@ -91,7 +93,6 @@
                     Welcome to Seahawk Restaurant! We serve you only the finest cuts of meats specially paired with delicate sides. Each day our in-house chef hand picks dishes for our limited menu. Elegant yet unique combinations create a flavorful experience. Warm and cozy atmosphere sets the tone for memories to be made.
                 </p>
             </section>
-
             <section class="image">
                 <img src="https://via.placeholder.com/400" alt="Dish Image">
             </section>

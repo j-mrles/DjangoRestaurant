@@ -8,3 +8,6 @@ def login(request):
 
 def register(request):
     return render(request, "pages/LoginComponent/RegisterPage.html", {})
+
+def reservation_page(request):
+    return render(request, 'pages/ReservationPage.html')  
