@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Seahawk Restaurant - Reservations</title>
     <link rel="stylesheet" href="{% static 'css/styles.css'%}">
-    <link rel="stylesheet" href="{% static 'css/ReservationPage.css}">
+    <link rel="stylesheet" href="{% static 'css/ReservationPageGuest.css'%}">
 </head>
 <body>
     <main class="main">
@@ -14,8 +14,9 @@
             <header>
                 <h1>Seahawk Restaurant</h1>
                 <nav>
-                    <a href="../ReservationComponent/ReservationPage.html">Reservations</a>
-                    <a href="../LoginComponent/LoginPage.html">Login</a>
+                    <!-- <a href="../ReservationComponent/ReservationPage.html">Reservations</a> -->
+                    <a href="{% url 'reservation_page' %}">Reservations</a>
+                    <a href="{% url 'login_page' %}">Login</a>
                 </nav>
             </header>
         </div>

@@ -16,7 +16,7 @@
                 <h1>Seahawk Restaurant</h1>
                 <nav>
                     <a href="{% url 'reservation_page'%}">Reservations</a>
-                    <a href="{% url 'login_page' %}}">Login</a>
+                    <a href="{% url 'login_page' %}">Login</a>
                 </nav>
             </header>
 
@@ -35,7 +35,7 @@
                 </form>
                 <div class="links">
                     <a href="#">Forgot your password?</a>
-                    <p>Don't have an account? <a href="../register/">Register here</a></p>
+                    <p>Don't have an account? <a href="{% url 'registration_page' %}">Register here</a></p>
                 </div>
             </section>
         </div>
