@@ -1,0 +1,60 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seahawk Restaurant - Reservations: search</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css'%}">
+    <link rel="stylesheet" href="{% static 'css/SearchPage.css'%}">
+    <!-- gabe adding a search functionality in sepearate html; subject to change/move -->
+</head>
+<body>
+    <main class="main">
+        <div class="container">
+            <header>
+                <h1><a href="{% url 'home' %}">Seahawk Restaurant</a></h1>
+                <nav>
+                    <!-- <a href="../ReservationComponent/ReservationPage.html">Reservations</a> -->
+                    <a href="{% url 'reservation_page' %}">Reservations</a>
+                    <a href="{% url 'login_page' %}">Login</a>
+                </nav>
+            </header>
+            <!-- div and section could be redundant, but may separate out inner components more later -->
+            <section class="searchbar">
+                <h3>Search For Reservations</h3>
+                <div class="search-holder">
+                    <div class="search-field">
+                        <label for="search-by-firstname">First Name</label>
+                        <input type="text" id="search-by-firstname" name="search-by-firstname">
+                    </div>
+                    <div class="search-field">
+                        <label for="search-by-lastname">Last Name</label>
+                        <input type="text" id="search-by-lastname" name="search-by-lastname">
+                    </div>
+                    <div class="search-field">
+                        <label for="search-by-resdate">Reservation Date</label>
+                        <input type="date" id="search-by-resdate" name="search-by-resdate">
+                    </div>
+                    <div class="search-field">
+                        <label for="search-by-restime">Reservation Time</label>
+                        <input type="time" id="search-by-restime" name="search-by-restime">
+                    </div>
+                    <div class="search-field">
+                        <label for="search-by-tablenum">Table Number</label>
+                        <input type="text" id="search-by-tablenum" name="search-by-tablenum">
+                        <!-- consider type change for above -->
+                    </div>
+                    <button id = "search-button" type="button">Search</button>
+                    <!-- Maybe "Find" or "Query" makes more sense than "Search" as a clear verb ? -->
+                </div>
+                <div class="search-results" id="search-results">
+                    <h2>Search Results: </h2>
+                    <!-- see old databases project (use unordered list to display result from wide query search) -->
+                    <ul id="list-of-results"></ul>
+                </div>
+            </section>
+        </div>
+    </main>
+</body>
+</html>

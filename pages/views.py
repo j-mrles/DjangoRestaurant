@@ -14,3 +14,6 @@ def reservation_page(request):
 
 def modify_reservation(request):
     return render(request, "pages/ReservationPage.html")
+
+def search_reservation(request):
+    return render(request, "pages/ReservationComponent/ReservationSearch.html")
