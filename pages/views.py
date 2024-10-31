@@ -1,7 +1,10 @@
 from django.shortcuts import render
+from .models import User
+
 
 def home(request):
-    return render(request, "pages/home.html", {})
+    users = User.objects.all()
+    return render(request, 'pages/home.html', {'users': users})  
 
 def login(request):
     return render(request, "pages/LoginComponent/LoginPage.html", {})
