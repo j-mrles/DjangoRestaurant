@@ -35,5 +35,9 @@ def reservation_page(request):
 def modify_reservation(request):
     return render(request, "pages/ReservationPage.html")
 
+def view_reservations(request):
+    users = User.objects.all
+    return render(request, "pages/ReservationComponent/ReservationView.html", {"users": users})
+
 def search_reservation(request):
     return render(request, "pages/ReservationComponent/ReservationSearch.html")

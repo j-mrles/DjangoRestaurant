@@ -1,0 +1,41 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seahawk Restaurant - View Reservations</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css'%}">
+    <link rel="stylesheet" href="{% static 'css/ReservationView.css'%}">
+</head>
+<body>
+    <main class="main">
+        <div class="container">
+            <header>
+                <h1>Seahawk Restaurant</h1>
+                <nav>
+                    <!-- <a href="../ReservationComponent/ReservationPage.html">Reservations</a> -->
+                    <a href="{% url 'reservation_page' %}">Reservations</a>
+                    <a href="{% url 'login_page' %}">Login</a>
+                    <!-- above may not be best way to do this, but keep for now (consider dropdown) -->
+                </nav>
+            </header>
+        </div>
+        <div class="search">
+            <form action="placeholder" method="post" id="search">
+
+            </form>
+        </div>
+        <div class="results">
+            {% for user in users %}
+                <div class="result-group">
+                    <p class="result-label">Name:</p><p class="result-item">{{user.firstname}} {{user.lastname}}</p>
+                    <p class="result-label">Date:</p><p class="result-item">{{user.reservationdate}}</p>
+                    <p class="result-label">Time:</p><p class="result-item">{{user.reservationtime}}</p>
+                    <p class="result-label">Table:</p><p class="result-item">{{user.tablenumber}}</p>
+                </div>
+            {% endfor %}
+        </div>
+
+    </main>
+</body>
