@@ -14,11 +14,12 @@
             <header>
                 <h1>Seahawk Restaurant</h1>
                 <nav>
-                    <!-- <a href="../ReservationComponent/ReservationPage.html">Reservations</a> -->
                     <a href="{% url 'reservation_page' %}">Reservations</a>
-                    <a href="{% url 'login_page' %}">Login</a>
-                    <!-- above may not be best way to do this, but keep for now (consider dropdown) -->
-                </nav>
+                    <form action="{% url 'logout' %}" method="POST" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit">Log out</button>
+                    </form>
+                </nav>                             
             </header>
             <section class="reservationform">
                 <h3>Make Reservation</h3>
