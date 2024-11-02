@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect 
 from .models import User
+from django.contrib.auth import logout
 from django.contrib import messages
+from django.shortcuts import redirect
 
 def home(request):
     users = User.objects.all()
@@ -59,3 +61,12 @@ def modify_reservation(request):
 
 def search_reservation(request):
     return render(request, "pages/ReservationComponent/ReservationSearch.html")
+
+
+def custom_logout(request):
+    if messages.get_messages(request):
+        messages.get_messages(request).used = True
+    
+    logout(request)
+    messages.success(request, "You have logged out successfully.")
+    return redirect('login_page')  
