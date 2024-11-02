@@ -7,9 +7,6 @@ def home(request):
     return render(request, 'pages/home.html', {'users': users})  
 
 def login(request):
-    username = None  
-    password = None  
-    
     if request.method == "POST":
         username = request.POST.get("username")
         password = request.POST.get("password")
@@ -24,9 +21,34 @@ def login(request):
                 messages.error(request, "Invalid username or password")
         else:
             messages.error(request, "Please enter both username and password")
-    return render(request, "pages/LoginComponent/LoginPage.html", {})
+    return render(request, "pages/LoginComponent/LoginPage.html")
 
 def register(request):
+    if request.method == "POST":
+        firstname = request.POST.get('firstname')
+        lastname = request.POST.get('lastname')
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        repassword = request.POST.get('repassword')
+
+        if password and repassword:
+            if password == repassword:
+                try:
+                    user = User(
+                        firstname=firstname,
+                        lastname=lastname,
+                        username=username,
+                        password=password  
+                    )
+                    user.save()
+                    messages.success(request, "Registration successful!")
+                    return redirect('login_page')
+                except Exception as e:
+                    messages.error(request, "Registration failed. Try again.")
+            else:
+                messages.error(request, "Passwords do not match.")
+        else:
+            messages.error(request, "Please fill in all required fields.")
     return render(request, "pages/LoginComponent/RegisterPage.html", {})
 
 def reservation_page(request):
