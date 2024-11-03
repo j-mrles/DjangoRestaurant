@@ -1,0 +1,70 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seahawk Restaurant - View Reservations</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css'%}">
+    <link rel="stylesheet" href="{% static 'css/ReservationView.css'%}">
+</head>
+<body>
+    <main class="main">
+        <div class="container">
+            <header>
+                <h1>Seahawk Restaurant</h1>
+                <nav>
+                    <!-- <a href="../ReservationComponent/ReservationPage.html">Reservations</a> -->
+                    <a href="{% url 'reservation_page' %}">Reservations</a>
+                    <a href="{% url 'login_page' %}">Login</a>
+                    <!-- above may not be best way to do this, but keep for now (consider dropdown) -->
+                </nav>
+            </header>
+            <div class="filter">
+                <h3>Filter Reservations</h3>
+                <form action="placeholder" method="post" id="filter">
+                    <div class="form-group">
+                        <label for="firstname"> First name: </label>
+                        <input type="text" name="firstname" id="firstname">
+                    </div>
+                    <div class="form-group">
+                        <label for="lastname"> First name: </label>
+                        <input type="text" name="lastname" id="lastname">
+                    </div>
+                    <div class="form-group">
+                        <label for="firstname"> Date: </label>
+                        <input type="date" name="res-date" id="res-date">
+                    </div>
+                    <div class="form-group">
+                        <label for="res-date"> Time: </label>
+                        <input type="time" name="res-time" id="res-time">
+                    </div>
+                    <div class="form-group">
+                        <label for="res-time"> Table: </label>
+                        <input type="number" name="res-date" id="res-date">
+                    </div>
+                    <input type="submit" id="submit" for="filter" value="Filter">
+                </form>
+            </div>
+            <div class="results">
+                <h3>Results</h3>
+                {% for user in users %}
+                    <div class="result-group">
+                        <p class="result-number">{{ forloop.counter }}</p>
+                        <div class="result-text">
+                            <div class="result-item"><p class="result-item-field">Name:</p><p class="result-item-content">{{user.firstname}} {{user.lastname}}</p></div>
+                            <div class="result-item"><p class="result-item-field">Date:</p><p class="result-item-content">{{user.reservationdate}}</p></div>
+                            <div class="result-item"><p class="result-item-field">Time:</p><p class="result-item-content">{{user.reservationtime}}</p></div>
+                            <div class="result-item"><p class="result-item-field">Table:</p><p class="result-item-content">{{user.tablenumber}}</p></div>
+                        </div>
+                        <div class="result-options">
+                            <a href="placeholder">Check In</a>
+                            <a href="placeholder">Modify</a>
+                            <a href="placeholder">Remove</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </main>
+</body>
