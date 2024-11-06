@@ -54,10 +54,10 @@ def register(request):
     return render(request, "pages/LoginComponent/RegisterPage.html", {})
 
 def reservation_page(request):
-    return render(request, 'pages/ReservationComponent/ReservationPageGuest.html') 
+    return render(request, 'pages/ReservationComponent/ReservationPage.html') 
 
 def modify_reservation(request):
-    return render(request, "pages/ReservationPage.html")
+    return render(request, "pages/ViewReservationsPage.html")
 
 def search_reservation(request):
     return render(request, "pages/ReservationComponent/ReservationSearch.html")
