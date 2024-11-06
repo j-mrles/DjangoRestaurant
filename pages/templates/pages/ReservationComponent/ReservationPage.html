@@ -4,23 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Seahawk Restaurant</title>
-    <!-- <link rel="stylesheet" href="../../styles/styles.css"> -->
+    <title>Seahawk Restaurant - Reservations</title>
     <link rel="stylesheet" href="{% static 'css/styles.css'%}">
-    <link rel="stylesheet" href="{% static 'css/ReservationPageGuest.css'%}">
-    <style>
-        /* not sure if this is the ideal approach but will for now  */
-        .container {
-            border-radius: 20px;
-        }
-        body {
-            background-image: url('../../../static/images/meal-platters.png'); 
-            background-size: cover;
-            background-repeat: no-repeat;
-            background-position: center;
-            min-height: 100vh;
-        }
-    </style>
+    <link rel="stylesheet" href="{% static 'css/ReservationPage.css'%}">
 </head>
 <body>
     <main class="main">
@@ -28,7 +14,65 @@
             <header>
                 <h1>Seahawk Restaurant</h1>
                 <nav>
-                    <a href="../pages/ReservationComponent/ReservationPage.html">Reservations</a>
-                    <a href="../pages/LoginComponent/LoginPage.html">Login</a>
-                </nav>
+                    <a href="{% url 'reservation_page' %}">Reservations</a>
+                    <form action="{% url 'logout' %}" method="POST" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit">Log out</button>
+                    </form>
+                </nav>                             
             </header>
+            <!-- Section that contains the "body" of the form; separated into form-body which contains the form labels and inputs, 
+             and then the visual to go alongside it -->
+            <section class="reservationform">
+                <h3>Make Reservation</h3>
+                <div class="form-body">
+                    <form action="placeholder" method="POST" id="reservation">
+                            <div class="form-group">
+                                <label for="firstname">First Name</label>
+                                <input type="text" id="firstname" name="firstname"> 
+                            </div>
+                            <div class="form-group">
+                                <label for="lastname">Last Name</label>
+                                <input type="text" id="firstname" name="firstname"> 
+                            </div>
+                            <div class="form-group">
+                                <label for="resdate">Reservation Date</label>
+                                <input type="date" id="resdate" name="resdate" placeholder="mm/dd/yyyy"> 
+                            </div>
+                            <div class="form-group">
+                                <label for="restime">Reservation Time</label>
+                                <select id="restime" name="restime">
+                                    <option value="16:00">4:00pm</option>
+                                    <option value="16:30">4:30pm</option>
+                                    <option value="17:00">5:00pm</option>
+                                    <option value="17:30">5:30pm</option>
+                                    <option value="18:00">6:00pm</option>
+                                    <option value="18:30">6:30pm</option>
+                                    <option value="19:00">7:00pm</option>
+                                    <option value="19:30">7:30pm</option>
+                                    <option value="20:00">8:00pm</option>
+                                    <option value="20:30">8:30pm</option>
+                                    <option value="21:00">9:00pm</option>
+                                    <option value="21:30">9:30pm</option>
+                                    <option value="22:00">10:00pm</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="tablenumber">Table Number</label>
+                                <input type="text" id="tablenumber" name="tablenumber"> 
+                            </div>
+                    </form>
+                    <div class="visual">
+                        <p>placeholder</p>
+                    </div>
+                </div>
+                <button type="submit" form="reservation">Reserve</button>
+            </section>
+            <!-- Section that contains search button below the main form section -->
+            <section class="search">
+                <h3>Already have a reservation?</h3>
+                <a href="{% url 'search_page' %}">Search</a>
+            </section>
+        </div>    
+    </main>
+</body>
