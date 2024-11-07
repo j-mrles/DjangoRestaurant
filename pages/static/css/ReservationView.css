@@ -1,9 +1,9 @@
 .filter {
     background: #D9D9D9;
-    padding: 10px 20px;
-    border-radius: 5px;
+    padding: 20px;
+    border-radius: 20px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    margin: 10px auto;
+    margin: 15px auto;
     text-align: left;
     max-width: 1200px;
     display: flex;
@@ -50,8 +50,8 @@
 
 .results {
     background: #D9D9D9;
-    padding: 10px 20px;
-    border-radius: 5px;
+    padding: 20px;
+    border-radius: 20px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     text-align: left;
     width: 100%;
