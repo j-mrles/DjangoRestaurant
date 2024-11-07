@@ -5,56 +5,38 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Seahawk Restaurant - Login</title>
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-    <link rel="stylesheet" href="{% static 'css/LoginPage.css' %}">
-    <style>
-        /* not sure if this is the ideal approach but will for now  */
+    <link rel="stylesheet" href="{% static 'css/styles.css'%}">
+    <link rel="stylesheet" href="{% static 'css/LoginPage.css'%}">
 
-        .container {
-            border-radius: 20px;
-        }
-        body {
-            background-image: url('../../../static/images/meal-platters.png'); 
-            background-size: cover;
-            background-repeat: no-repeat;
-            background-position: center;
-            min-height: 100vh;
-        }
-    </style>
 </head>
 <body>
     <main class="main">
         <div class="container">
             <header>
                 <h1>Seahawk Restaurant</h1>
+                <nav>
+                    <a href="{% url 'reservation_page'%}">Reservations</a>
+                    <a href="{% url 'login_page' %}}">Login</a>
+                </nav>
             </header>
 
-            <section class="login-container">
-                {% if messages %}
-                <div class="messages">
-                    {% for message in messages %}
-                        <div class="message {{ message.tags }}">{{ message }}</div>
-                    {% endfor %}
-                </div>
-                {% endif %}
-                <section class="login">
-                    <h2>Login</h2>
-                    <form action="{% url 'login_page' %}" method="POST">
-                        {% csrf_token %}
-                        <div class="form-group">
-                            <label for="username">Username:</label>
-                            <input type="text" id="username" name="username" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="password">Password:</label>
-                            <input type="password" id="password" name="password" required>
-                        </div>
-                        <button type="submit">Login</button>
-                    </form>
-                    <div class="links">
-                        <p>Don't have an account? <a href="{% url 'registration_page' %}">Register here</a></p>
+            <section class="login">
+                <h2>Login</h2>
+                <form action="your-login-endpoint" method="POST">
+                    <div class="form-group">
+                        <label for="username">Username:</label>
+                        <input type="text" id="username" name="username" required>
                     </div>
-                </section>
+                    <div class="form-group">
+                        <label for="password">Password:</label>
+                        <input type="password" id="password" name="password" required>
+                    </div>
+                    <button type="submit">Login</button>
+                </form>
+                <div class="links">
+                    <a href="#">Forgot your password?</a>
+                    <p>Don't have an account? <a href="../register/">Register here</a></p>
+                </div>
             </section>
         </div>
     </main>
