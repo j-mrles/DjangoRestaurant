@@ -63,6 +63,9 @@ def modify_reservation(request):
 
 def search_reservation(request):
     # do search database stuff here :D
+
+    reservations = []
+
     if request.method == "GET":
         first_name = request.GET.get('search-by-firstname','')
         last_name = request.GET.get('search-by-lastname','')
@@ -71,21 +74,22 @@ def search_reservation(request):
         tablenum = request.GET.get('search-by-tablenum','')
         # available = request.GET.get('search-by-availability','')
         # reserved_by = request.GET.get('search-by-reservedby','')  # this is a little janky
+        
+        if first_name or last_name or date or time or tablenum:
+            reservations = Reservation.objects.all()
 
-        reservations = Reservation.objects.all()
-
-        if first_name:
-            reservations = reservations.filter(reservedBy__firstname__icontains=first_name)
-        if last_name:
-            reservations = reservations.filter(reservedBy__lastname__icontains=last_name)
-        if date:
-            reservations = reservations.filter(date=date)
-        if time:
-            reservations = reservations.filter(time=time)
-        if tablenum:
-            reservations = reservations.filter(tablenum=tablenum)
-        # if available:
-        # if reserved_by:
+            if first_name:
+                reservations = reservations.filter(reservedBy__firstname__icontains=first_name)
+            if last_name:
+                reservations = reservations.filter(reservedBy__lastname__icontains=last_name)
+            if date:
+                reservations = reservations.filter(date=date)
+            if time:
+                reservations = reservations.filter(time=time)
+            if tablenum:
+                reservations = reservations.filter(tablenum=tablenum)
+            # if available:
+            # if reserved_by:
 
     return render(request, "pages/ReservationComponent/ReservationSearch.html", {
         'reservations':reservations
