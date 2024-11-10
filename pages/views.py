@@ -1,8 +1,10 @@
 from django.shortcuts import render, redirect 
 from .models import User
+from .models import Reservation
 from django.contrib.auth import logout
 from django.contrib import messages
 from django.shortcuts import redirect
+from django.db.models import Q
 
 def home(request):
     users = User.objects.all()
@@ -60,7 +62,34 @@ def modify_reservation(request):
     return render(request, "pages/ViewReservationsPage.html")
 
 def search_reservation(request):
-    return render(request, "pages/ReservationComponent/ReservationSearch.html")
+    # do search database stuff here :D
+    if request.method == "GET":
+        first_name = request.GET.get('search-by-firstname','')
+        last_name = request.GET.get('search-by-lastname','')
+        date = request.GET.get('search-by-resdate','')
+        time = request.GET.get('search-by-restime','')
+        tablenum = request.GET.get('search-by-tablenum','')
+        # available = request.GET.get('search-by-availability','')
+        # reserved_by = request.GET.get('search-by-reservedby','')  # this is a little janky
+
+        reservations = Reservation.objects.all()
+
+        if first_name:
+            reservations = reservations.filter(reservedBy__firstname__icontains=first_name)
+        if last_name:
+            reservations = reservations.filter(reservedBy__lastname__icontains=last_name)
+        if date:
+            reservations = reservations.filter(date=date)
+        if time:
+            reservations = reservations.filter(time=time)
+        if tablenum:
+            reservations = reservations.filter(tablenum=tablenum)
+        # if available:
+        # if reserved_by:
+
+    return render(request, "pages/ReservationComponent/ReservationSearch.html", {
+        'reservations':reservations
+    })
 
 
 def custom_logout(request):
