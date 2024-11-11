@@ -103,3 +103,14 @@ def custom_logout(request):
     logout(request)
     messages.success(request, "You have logged out successfully.")
     return redirect('login_page')  
+
+def table_statuses(request):
+    tables = [
+        {
+            "number": i + 1,
+            "capacity": 4, # placeholder data for each tables capacity 
+            "availability": "Available" if i > 2 else "Reserved" # placeholder data (change available conditions)
+        }
+        for i in range(10) # placeholder data for total number of tables
+    ]
+    return render(request, 'pages/ReservationComponent/TableStatuses.html', {"tables": tables})
