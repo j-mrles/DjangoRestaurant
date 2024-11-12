@@ -61,9 +61,10 @@ def reservation_page(request):
 def viewall_reservations(request):
     messages.get_messages(request).used = True
     user = User.objects.get(id=request.session['user_id'])
+    reservations = Reservation.objects.all()
     if user.role != 'Admin':
         messages.error(request, "User not authorized!")
-    return render(request, 'pages/ReservationComponent/ReservationViewAll.html', {'user': user})
+    return render(request, 'pages/ReservationComponent/ReservationViewAll.html', {'user': user, 'reservations' : reservations})
 
 def modify_reservation(request):
     return render(request, "pages/ViewReservationsPage.html")
