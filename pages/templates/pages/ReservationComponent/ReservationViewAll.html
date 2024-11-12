@@ -65,14 +65,14 @@
             <!-- Results box -->
             <div class="results">
                 <h3>Results</h3>
-                {% for user in users %}
+                {% for reservation in reservations %}
                     <div class="result-group">
                         <p class="result-number">{{ forloop.counter }}</p>
                         <div class="result-text">
-                            <div class="result-item"><p class="result-item-field">Name:</p><p class="result-item-content">{{user.firstname}} {{user.lastname}}</p></div>
-                            <div class="result-item"><p class="result-item-field">Date:</p><p class="result-item-content">{{user.reservationdate}}</p></div>
-                            <div class="result-item"><p class="result-item-field">Time:</p><p class="result-item-content">{{user.reservationtime}}</p></div>
-                            <div class="result-item"><p class="result-item-field">Table:</p><p class="result-item-content">{{user.tablenumber}}</p></div>
+                            <div class="result-item"><p class="result-item-field">Name:</p><p class="result-item-content">{{reservation.reservedBy.firstname}} {{reservation.reservedBy.lastname}}</p></div>
+                            <div class="result-item"><p class="result-item-field">Date:</p><p class="result-item-content">{{reservation.date}}</p></div>
+                            <div class="result-item"><p class="result-item-field">Time:</p><p class="result-item-content">{{reservation.time}}</p></div>
+                            <div class="result-item"><p class="result-item-field">Table:</p><p class="result-item-content">{{reservation.tablenum}}</p></div>
                         </div>
                         <div class="result-options">
                             <a href="placeholder">Check In</a>
