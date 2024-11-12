@@ -79,3 +79,14 @@ button#search-button:hover {
     padding-top: 10px;
     margin-top: 20px;
 }
+
+.results, .noresults {
+    width: 100%;
+    margin-top: 15px;
+    padding: 20px;
+    display: inline-flex;
+    flex-direction: row;
+    border-radius: 20px;
+    background-color:#f0f0f0;
+    border-color: #b1b1b1;
+}
