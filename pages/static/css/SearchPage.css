@@ -75,7 +75,6 @@ button#search-button:hover {
 }
 
 .search-results {
-    border-top: 1px solid #ccc;
     padding-top: 10px;
     margin-top: 20px;
 }
