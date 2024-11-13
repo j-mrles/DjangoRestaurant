@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Available Tables - Seahawk Restaurant</title>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-    <link rel="stylesheet" href="{% static 'css/ReservationPage.css' %}">
+    <link rel="stylesheet" href="{% static 'css/TableStatuses.css' %}">
 </head>
 <body>
     <main class="main">
@@ -32,9 +32,17 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for table in tables %}
+                        {% for table in tables%}
                         <tr>
-                            <td>{{ table.number }}</td>
+                            <td>
+                                <!-- Check if table number is available -->
+                                {% if table.availability == "Available" %}
+                                    <a href="{% url 'reservation_page' %}?tablenumber={{ table.number }}" class="button">{{ table.number }}</a>
+                                <!-- If table number is reserved, do not display clickable button -->
+                                {% else %}
+                                <button class="button" disabled>{{ table.number }}</button>
+                                {% endif %}
+                            </td>
                             <td>{{ table.capacity }}</td>
                             <td>{{ table.availability }}</td>
                         </tr>

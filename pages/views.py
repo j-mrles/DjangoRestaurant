@@ -5,6 +5,7 @@ from django.contrib.auth import logout
 from django.contrib import messages
 from django.shortcuts import redirect
 from django.db.models import Q
+import random
 
 def home(request):
     users = User.objects.all()
@@ -56,7 +57,11 @@ def register(request):
     return render(request, "pages/LoginComponent/RegisterPage.html", {})
 
 def reservation_page(request):
-    return render(request, 'pages/ReservationComponent/ReservationPage.html') 
+    # modified to pre-fill the table selection form
+    tablenumber = request.GET.get('tablenumber')
+    return render(request, 'pages/ReservationComponent/ReservationPage.html', {
+        'tablenumber': tablenumber, 
+    })
 
 def modify_reservation(request):
     return render(request, "pages/ViewReservationsPage.html")
@@ -108,9 +113,19 @@ def table_statuses(request):
     tables = [
         {
             "number": i + 1,
-            "capacity": 4, # placeholder data for each tables capacity 
-            "availability": "Available" if i > 2 else "Reserved" # placeholder data (change available conditions)
+            # placeholder data for each table's capacity
+            "capacity": random.choice([2, 4, 6]), 
+            # can adjust weights(%) for which is more frequent, available is occuring more
+            "availability": random.choices(["Available", "Reserved"], weights=[75, 15])[0]
         }
-        for i in range(10) # placeholder data for total number of tables
+        # placeholder data for a total of 10 tables
+        for i in range(10)  
     ]
-    return render(request, 'pages/ReservationComponent/TableStatuses.html', {"tables": tables})
+
+    selected_table = request.GET.get('tablenumber', '')
+
+    return render(request, 'pages/ReservationComponent/TableStatuses.html', {
+        "tables": tables,
+        # pass selected table to the template
+        "selected_table": selected_table,  
+    })

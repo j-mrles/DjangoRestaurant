@@ -59,7 +59,13 @@
                             </div>
                             <div class="form-group">
                                 <label for="tablenumber">Table Number</label>
-                                <input type="text" id="tablenumber" name="tablenumber"> 
+                                <!-- Added value to pre-fill form, made read only -->
+                                <input type="text" id="tablenumber" name="tablenumber" value="{{ tablenumber }}" readonly> 
+                            </div>
+                            <!-- Form section for viewing available tables -->
+                            <div class="form-group">
+                                <label for="table_statuses">Table Statuses</label>
+                                <a href="{% url 'table_statuses' %}" class="button">View Available Tables</a>
                             </div>
                     </form>
                     <div class="visual">
