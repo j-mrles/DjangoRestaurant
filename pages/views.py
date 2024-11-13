@@ -1,10 +1,17 @@
 from django.shortcuts import render, redirect 
 from .models import User
 from .models import Reservation
+from .models import Makes
 from django.contrib.auth import logout
 from django.contrib import messages
 from django.shortcuts import redirect
 from django.db.models import Q
+import datetime
+
+from django.contrib import messages
+import logging
+
+logger = logging.getLogger(__name__)
 
 def home(request):
     users = User.objects.all()
@@ -48,6 +55,7 @@ def register(request):
                     messages.success(request, "Registration successful!")
                     return redirect('login_page')
                 except Exception as e:
+                    logger.error(f"Registration failed: {str(e)}")  # Log the error
                     messages.error(request, "Registration failed. Try again.")
             else:
                 messages.error(request, "Passwords do not match.")
@@ -56,7 +64,60 @@ def register(request):
     return render(request, "pages/LoginComponent/RegisterPage.html", {})
 
 def reservation_page(request):
-    return render(request, 'pages/ReservationComponent/ReservationPage.html') 
+    
+    # gabe's added code for making a reservation #
+    
+    if request.method == 'POST':
+        firstname = request.POST.get('firstname')
+        lastname = request.POST.get('lastname')
+        resdate = request.POST.get('resdate')
+        restime = request.POST.get('restime')
+        tablenumber = request.POST.get('tablenum')
+
+        reservation_date = datetime.datetime.strptime(resdate, '%Y-%m-%d').date()
+        reservation_time = datetime.datetime.strptime(restime, '%H:%M').time()
+
+        existingReservation = Reservation.objects.filter(
+            tablenum=tablenumber,
+            date=reservation_date,
+            time=reservation_time
+        ).first()
+
+        # if the reservation already exists / there's already a reservation for the request time
+        if existingReservation and not existingReservation.available:
+            return render(request, 'pages/ReservationComponent/ReservationPage.html', {
+                'Error': f"Table {tablenumber} is already reserved for {reservation_date} at {reservation_time}."
+            })
+
+        # make the reservation if it is possible (doesn't already exist/date and time available)
+        reservation = Reservation(
+            tablenum=tablenumber,
+            date=reservation_date,
+            time=reservation_time,
+            available=False,
+        )
+        reservation.save()
+        
+        # same as in my welcome user ticket, we'll probably need to add a user id
+        username = request.POST.get('username')
+        user = User.objects.get(username=username)
+
+        if user:
+            Makes.objects.create(user=user, reservation=reservation)
+        else:
+            return render(request, 'pages/ReservationComponent/ReservationPage.html', {
+                'Error': "The user entered was not found, please log in or provide a valid username"
+            })
+            
+        successMessage = f"Reservation for Table {tablenumber} on {reservation_date} at {reservation_time} has been successfully made."
+        
+        return render(request, 'pages/ReservationComponent/ReservationPage.html', {
+            'successMessage' : successMessage
+        })
+        # we can do below redirect when we make a successful, confirmed reservation page
+        # return redirect('reservation_confirmation')
+    return render(request, 'pages/ReservationComponent/ReservationPage.html')
+    # ------------------------------------------ #
 
 def viewall_reservations(request):
     messages.get_messages(request).used = True

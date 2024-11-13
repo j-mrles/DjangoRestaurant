@@ -26,22 +26,24 @@
             <section class="reservationform">
                 <h3>Make Reservation</h3>
                 <div class="form-body">
-                    <form action="placeholder" method="POST" id="reservation">
+                    <!--<form action="placeholder" method="POST" id="reservation">-->
+                    <form action="{% url 'reservation_page' %}" method="POST" id="reservation">
+                        {% csrf_token %}
                             <div class="form-group">
                                 <label for="firstname">First Name</label>
-                                <input type="text" id="firstname" name="firstname"> 
+                                <input type="text" id="firstname" name="firstname" required> 
                             </div>
                             <div class="form-group">
                                 <label for="lastname">Last Name</label>
-                                <input type="text" id="firstname" name="firstname"> 
+                                <input type="text" id="lastname" name="lastname" required> 
                             </div>
                             <div class="form-group">
                                 <label for="resdate">Reservation Date</label>
-                                <input type="date" id="resdate" name="resdate" placeholder="mm/dd/yyyy"> 
+                                <input type="date" id="resdate" name="resdate" placeholder="mm/dd/yyyy" required> 
                             </div>
                             <div class="form-group">
                                 <label for="restime">Reservation Time</label>
-                                <select id="restime" name="restime">
+                                <select id="restime" name="restime" required>
                                     <option value="16:00">4:00pm</option>
                                     <option value="16:30">4:30pm</option>
                                     <option value="17:00">5:00pm</option>
@@ -59,12 +61,22 @@
                             </div>
                             <div class="form-group">
                                 <label for="tablenumber">Table Number</label>
-                                <input type="text" id="tablenumber" name="tablenumber"> 
+                                <!--for below, may need to consider changing how choosing tablenumber goes, maybe even a dropdown?-->
+                                <input type="text" id="tablenumber" name="tablenum" required> 
                             </div>
                     </form>
-                    <div class="visual">
+                    <!--<div class="visual">
                         <p>placeholder</p>
-                    </div>
+                    </div>-->
+                    {% if successMessage %}
+                        <div class="successmessage">
+                            <p>{{ successMessage }}</p>
+                        </div>
+                    {% elif error %}
+                        <div class="errormessage">
+                            <p>{{ error }}</p>
+                        </div>
+                    {% endif %}
                 </div>
                 <button type="submit" form="reservation">Reserve</button>
             </section>
