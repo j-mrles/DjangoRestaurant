@@ -11,6 +11,11 @@ def home(request):
     return render(request, 'pages/home.html', {'users': users})  
 
 def login(request):
+
+    # added; this will (should) clear any messages that may have been present on html when loaded (GET'ed)
+    if request.method =="GET":
+        list(messages.get_messages(request))
+
     if request.method == "POST":
         username = request.POST.get("username")
         password = request.POST.get("password")
