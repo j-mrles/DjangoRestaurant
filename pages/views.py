@@ -18,6 +18,8 @@ def login(request):
             try:
                 user = User.objects.get(username=username, password=password)
                 request.session['user_id'] = user.id
+                # consider below -> remove if doesn't work
+                request.session['username'] = username
                 messages.success(request, "You are logged in successfully!")
                 return redirect('reservation_page')
             except User.DoesNotExist:
@@ -55,7 +57,17 @@ def register(request):
     return render(request, "pages/LoginComponent/RegisterPage.html", {})
 
 def reservation_page(request):
-    return render(request, 'pages/ReservationComponent/ReservationPage.html') 
+    firstname = None
+    username = request.session.get('username')
+    if username:
+        try:
+            user = User.objects.get(username=username)
+            firstname = user.firstname
+        except User.DoesNotExist:
+            firstname = "Guest"
+    return render(request, 'pages/ReservationComponent/ReservationPage.html', {
+        'firstname': firstname
+    }) 
 
 def viewall_reservations(request):
     messages.get_messages(request).used = True
