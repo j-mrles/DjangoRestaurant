@@ -5,6 +5,7 @@ from django.contrib.auth import logout
 from django.contrib import messages
 from django.shortcuts import redirect
 from django.db.models import Q
+import random
 
 def home(request):
     return render(request, 'pages/LoginComponent/HomePage.html', {})  
@@ -127,3 +128,24 @@ def custom_logout(request):
     logout(request)
     messages.success(request, "You have logged out successfully.")
     return redirect('login_page')  
+
+def table_statuses(request):
+    tables = [
+        {
+            "number": i + 1,
+            # placeholder data for each table's capacity
+            "capacity": random.choice([2, 4, 6]), 
+            # can adjust weights(%) for which is more frequent, available is occuring more
+            "availability": random.choices(["Available", "Reserved"], weights=[75, 15])[0]
+        }
+        # placeholder data for a total of 10 tables
+        for i in range(10)  
+    ]
+
+    selected_table = request.GET.get('tablenumber', '')
+
+    return render(request, 'pages/ReservationComponent/TableStatuses.html', {
+        "tables": tables,
+        # pass selected table to the template
+        "selected_table": selected_table,  
+    })

@@ -1,0 +1,60 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Available Tables - Seahawk Restaurant</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/TableStatuses.css' %}">
+</head>
+<body>
+    <main class="main">
+        <div class="container">
+            <header>
+                <h1>Seahawk Restaurant</h1>
+                <nav>
+                    <a href="{% url 'reservation_page' %}">Reservations</a>
+                    <a href="{% url 'login_page' %}">Login</a>
+                    <a href="{% url 'registration_page' %}">Register</a>
+                </nav>
+            </header>
+
+            <section class="TableStatuses">
+                <h2>Available Tables</h2>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Number</th>
+                            <th>Capacity</th>
+                            <th>Availability</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for table in tables%}
+                        <tr>
+                            <td>
+                                <!-- Check if table number is available -->
+                                {% if table.availability == "Available" %}
+                                    <a href="{% url 'reservation_page' %}?tablenumber={{ table.number }}" class="button">{{ table.number }}</a>
+                                <!-- If table number is reserved, do not display clickable button -->
+                                {% else %}
+                                <button class="button" disabled>{{ table.number }}</button>
+                                {% endif %}
+                            </td>
+                            <td>{{ table.capacity }}</td>
+                            <td>{{ table.availability }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <div class="button">
+                    <a href="{% url 'reservation_page' %}" class="button">Back to Reservations</a>
+                </div>
+            </section>
+        </div>
+    </main>
+</body>
+</html>

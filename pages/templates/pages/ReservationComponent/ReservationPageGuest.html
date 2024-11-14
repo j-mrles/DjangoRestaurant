@@ -6,7 +6,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Seahawk Restaurant - Reservations</title>
     <link rel="stylesheet" href="{% static 'css/styles.css'%}">
-    <link rel="stylesheet" href="{% static 'css/ReservationPage.css'%}">
+    <link rel="stylesheet" href="{% static 'css/ReservationPageGuest.css'%}">
+    <style>
+        /* not sure if this is the ideal approach but will for now  */
+        .container {
+            border-radius: 20px;
+        }
+        body {
+            background-image: url('../../../static/images/meal-platters.png'); 
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            min-height: 100vh;
+        }
+    </style>
 </head>
 <body>
     <main class="main">
@@ -21,11 +34,6 @@
                     </form>
                 </nav>                             
             </header>
-            <section class="welcomeuser">
-                <h2>Welcome, {{ firstname }}</h2>
-            </section>
-            <!-- Section that contains the "body" of the form; separated into form-body which contains the form labels and inputs, 
-             and then the visual to go alongside it -->
             <section class="reservationform">
                 <h3>Make Reservation</h3>
                 <div class="form-body">
@@ -63,8 +71,7 @@
                             <div class="form-group">
                                 <label for="tablenumber">Table Number</label>
                                 <!-- Added value to pre-fill form, made read only -->
-                                <input type="text" id="tablenumber" name="tablenumber" value="{{ tablenumber }}" readonly> 
-                            </div>
+                                <input type="text" id="tablenumber" name="tablenumber" value="{{ tablenumber }}" readonly>                            </div>
                             <!-- Form section for viewing available tables -->
                             <div class="form-group">
                                 <label for="table_statuses">Table Statuses</label>
@@ -77,7 +84,6 @@
                 </div>
                 <button type="submit" form="reservation">Reserve</button>
             </section>
-            <!-- Section that contains search button below the main form section -->
             <section class="search">
                 <h3>Already have a reservation?</h3>
                 <a href="{% url 'search_page' %}">Search</a>
