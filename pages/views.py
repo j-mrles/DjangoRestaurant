@@ -7,8 +7,7 @@ from django.shortcuts import redirect
 from django.db.models import Q
 
 def home(request):
-    users = User.objects.all()
-    return render(request, 'pages/home.html', {'users': users})  
+    return render(request, 'pages/LoginComponent/HomePage.html', {})  
 
 def login(request):
     if request.method == "POST":
