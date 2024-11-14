@@ -7,19 +7,6 @@
     <title>Seahawk Restaurant - Reservations: search</title>
     <link rel="stylesheet" href="{% static 'css/styles.css'%}">
     <link rel="stylesheet" href="{% static 'css/SearchPage.css'%}">
-    <style>
-        /* not sure if this is the ideal approach but will for now  */
-        .container {
-            border-radius: 20px;
-        }
-        body {
-            background-image: url('../../../static/images/meal-platters.png'); 
-            background-size: cover;
-            background-repeat: no-repeat;
-            background-position: center;
-            min-height: 100vh;
-        }
-    </style>
     <!-- gabe adding a search functionality in sepearate html; subject to change/move -->
 </head>
 <body>
@@ -66,15 +53,20 @@
                 <div class="search-results" id="search-results">
                     <h2>Search Results: </h2>
                     <!-- see old databases project (use unordered list to display result from wide query search) -->
-                    <ul id="list-of-results">
+                    <div id="list-of-results">
                         {% if reservations %}
                             {% for reservation in reservations %}
-                                <li>
+                                <div class="results">
                                     Table {{ reservation.tablenum }} reserved by {{ reservation.reservedBy.firstname }} {{ reservation.reservedBy.lastname }} on {{ reservation.date }} at {{ reservation.time}}.
-                                </li>
+                                </div>
                             {% endfor %}
                         {% else %}
-                            <li>No reservations were found given your search criteria.</li>
+                            <div class="noresults">
+                                <p>No reservations were found 
+                                    {% if firstname or lastname or date or time or tablenum %} 
+                                    with criteria " {{ firstname }} {{ lastname }} {{ date }} {{ time }} {{ tablenum }} " 
+                                    {% endif %}</p>
+                            </div>
                         {% endif %}
                     </ul>
                 </div>

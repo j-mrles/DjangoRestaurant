@@ -19,6 +19,8 @@ def login(request):
             try:
                 user = User.objects.get(username=username, password=password)
                 request.session['user_id'] = user.id
+                # consider below -> remove if doesn't work
+                request.session['username'] = username
                 messages.success(request, "You are logged in successfully!")
                 return redirect('reservation_page')
             except User.DoesNotExist:
@@ -56,11 +58,17 @@ def register(request):
     return render(request, "pages/LoginComponent/RegisterPage.html", {})
 
 def reservation_page(request):
-    # modified to pre-fill the table selection form
-    tablenumber = request.GET.get('tablenumber')
+    firstname = None
+    username = request.session.get('username')
+    if username:
+        try:
+            user = User.objects.get(username=username)
+            firstname = user.firstname
+        except User.DoesNotExist:
+            firstname = "Guest"
     return render(request, 'pages/ReservationComponent/ReservationPage.html', {
-        'tablenumber': tablenumber, 
-    })
+        'firstname': firstname
+    }) 
 
 def viewall_reservations(request):
     messages.get_messages(request).used = True
@@ -104,7 +112,12 @@ def search_reservation(request):
             # if reserved_by:
 
     return render(request, "pages/ReservationComponent/ReservationSearch.html", {
-        'reservations':reservations
+        'reservations':reservations,
+        'firstname': first_name,
+        'lastname' : last_name,
+        'date' : date,
+        'time' : time,
+        'tablenum' : tablenum
     })
 
 
