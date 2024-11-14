@@ -99,7 +99,12 @@ def search_reservation(request):
             # if reserved_by:
 
     return render(request, "pages/ReservationComponent/ReservationSearch.html", {
-        'reservations':reservations
+        'reservations':reservations,
+        'firstname': first_name,
+        'lastname' : last_name,
+        'date' : date,
+        'time' : time,
+        'tablenum' : tablenum
     })
 
 
