@@ -36,7 +36,8 @@
             <section class="reservationform">
                 <h3>Make Reservation</h3>
                 <div class="form-body">
-                    <form action="placeholder" method="POST" id="reservation">
+                    <form action="{% url 'reservation_page' %}" method="POST" id="reservation">
+                            {% csrf_token %}
                             {% if loggedin != "true" %}
                             <div class="form-group">
                                 <label for="firstname">First Name</label>
@@ -44,7 +45,7 @@
                             </div>
                             <div class="form-group">
                                 <label for="lastname">Last Name</label>
-                                <input type="text" id="firstname" name="firstname" required> 
+                                <input type="text" id="lastname" name="lastname" required> 
                             </div>
                             <div class="form-group">
                                 <label for="email">Email Address</label>
@@ -80,7 +81,7 @@
                             <div class="form-group">
                                 <label for="tablenumber">Table Number</label>
                                 <!-- Added value to pre-fill form, made read only -->
-                                <input type="text" id="tablenumber" name="tablenumber" value="{{ tablenumber }}" readonly> 
+                                <input type="text" id="tablenumber" name="tablenumber" value="{{ tablenumber }}"> 
                             </div>
                             <!-- Form section for viewing available tables -->
                             <div class="form-group">

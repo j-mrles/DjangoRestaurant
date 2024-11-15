@@ -7,6 +7,7 @@ from django.contrib import messages
 from django.shortcuts import redirect
 from django.db.models import Q
 import random
+from datetime import datetime, timedelta
 
 def home(request):
     loggedin = 'false'
@@ -76,21 +77,51 @@ def reservation_page(request):
     # Authenticate user for role-specific UI elements
     loggedin = 'false'
     role = 'user'
-    firstname = None
-    if request.session.has_key('username'):
-        user = User.objects.get(username=request.session.get('username'))
+    firstname, lastname, email, phonenumber, user = None, None, None, None, None
+    if request.session.has_key('username'): # If user is logged in
+        user = User.objects.get(username=request.session.get('username')) # Get the user object from session 'username' field
+        # Fill out variables from user account
         firstname = user.first_name
+        lastname = user.last_name
+        email = user.email
+        phonenumber = user.resuser.phonenumber
+        # Set login flag and role appropriately for dynamic HTML elements
         loggedin = 'true'
         if user.is_staff:
             role = 'employee'
     else:
         firstname = "Guest"
 
+    if request.method == "POST":
+        # If user isn't logged in, get personal details from form
+        if user is None:
+            firstname = request.POST.get('firstname')
+            lastname = request.POST.get('lastname')
+            email = request.POST.get('email')
+            phonenumber = request.POST.get('phone')
+            
+            try:
+                user = User.objects.create(first_name=firstname, last_name=lastname, email=email)
+                user.save()
+                resuser = ResUser.objects.create(phonenumber=phonenumber, user=user)
+                resuser.save()
+                
+            except:
+                messages.error(request, "Error occured while creating reservation")
+
+        date = datetime.strptime(request.POST.get('resdate'), "%Y-%m-%d")
+        time = datetime.strptime(request.POST.get('restime'), "%H:%M")
+        tablenumber = request.POST.get('tablenumber')
+        reservation = Reservation.objects.create(tablenum=tablenumber, date=date, time=time, reservedBy=user)
+        reservation.save()
+        return redirect('home')
+
     return render(request, 'pages/ReservationComponent/ReservationPage.html', {
         'firstname': firstname,
         'loggedin': loggedin,
         'role': role,
     }) 
+    
 
 def viewall_reservations(request):
     messages.get_messages(request).used = True
@@ -174,3 +205,18 @@ def table_statuses(request):
         # pass selected table to the template
         "selected_table": selected_table,  
     })
+
+
+def tableAvailability(date, time):
+    reservations = Reservation.objects.all()
+
+    reservations.filter(date=date)
+
+    tables = [True] * 15
+
+    for reservation in reservations:
+
+        if reservation.time < time < reservation.time + timedelta(minutes=120):
+            tables[reservation.tablenum-1] = False
+    
+    return tables
