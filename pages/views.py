@@ -1,52 +1,65 @@
 from django.shortcuts import render, redirect 
-from .models import User
+from django.contrib.auth.models import User
 from .models import Reservation
-from django.contrib.auth import logout
+from .models import ResUser
+from django.contrib.auth import logout, authenticate
 from django.contrib import messages
 from django.shortcuts import redirect
 from django.db.models import Q
 import random
 
 def home(request):
-    return render(request, 'pages/LoginComponent/HomePage.html', {})  
+    loggedin = 'false'
+    role = 'user'
+    if request.session.has_key('username'):
+        loggedin = 'true'
+        if User.objects.get(username=request.session.get('username')).is_staff:
+            role = 'employee'
+    return render(request, 'pages/LoginComponent/HomePage.html', {
+        'loggedin' : loggedin,
+        'role': role
+        })  
 
 def login(request):
-    if request.method == "POST":
+    messages.get_messages(request).used = True                              # clear any messages in request
+    if request.method == "POST":                                            # If the request is someone clicking a form button
+        # Get the form data (For login, just username and password)
         username = request.POST.get("username")
         password = request.POST.get("password")
-
-        if username and password:
-            try:
-                user = User.objects.get(username=username, password=password)
+        if username and password:                                           # If both fields are NOT empty
+            user = authenticate(username=username , password=password)      # Authenticate user
+            if user is not None:                                            # If user is found
                 request.session['user_id'] = user.id
                 # consider below -> remove if doesn't work
                 request.session['username'] = username
                 messages.success(request, "You are logged in successfully!")
                 return redirect('reservation_page')
-            except User.DoesNotExist:
+            else:                                                           # If user is NOT found
                 messages.error(request, "Invalid username or password")
-        else:
+        else:                                                               # If one or both fields are empty
             messages.error(request, "Please enter both username and password")
     return render(request, "pages/LoginComponent/LoginPage.html")
 
 def register(request):
+    # Clear any messages in the request
+    messages.get_messages(request).used = True
     if request.method == "POST":
+        # Get form data
         firstname = request.POST.get('firstname')
         lastname = request.POST.get('lastname')
+        email = request.POST.get('email')
+        phonenumber = request.POST.get('phone')
         username = request.POST.get('username')
         password = request.POST.get('password')
         repassword = request.POST.get('repassword')
 
-        if password and repassword:
-            if password == repassword:
+        if password and repassword:                                         # If password and repassword are not blank
+            if password == repassword:                                      # If password and repassword match
                 try:
-                    user = User(
-                        firstname=firstname,
-                        lastname=lastname,
-                        username=username,
-                        password=password  
-                    )
+                    user = User.objects.create_user(username, email, password, first_name = firstname, last_name = lastname)    # Create user object with provided data and save it
                     user.save()
+                    resuser = ResUser.objects.create(phonenumber=phonenumber, user=user)                                        # Create resuser object to store phone number and save it
+                    resuser.save()
                     messages.success(request, "Registration successful!")
                     return redirect('login_page')
                 except Exception as e:
@@ -58,25 +71,37 @@ def register(request):
     return render(request, "pages/LoginComponent/RegisterPage.html", {})
 
 def reservation_page(request):
+    messages.get_messages(request).used = True                               # Clear any messages
+    
+    # Authenticate user for role-specific UI elements
+    loggedin = 'false'
+    role = 'user'
     firstname = None
-    username = request.session.get('username')
-    if username:
-        try:
-            user = User.objects.get(username=username)
-            firstname = user.firstname
-        except User.DoesNotExist:
-            firstname = "Guest"
+    if request.session.has_key('username'):
+        user = User.objects.get(username=request.session.get('username'))
+        firstname = user.first_name
+        loggedin = 'true'
+        if user.is_staff:
+            role = 'employee'
+    else:
+        firstname = "Guest"
+
     return render(request, 'pages/ReservationComponent/ReservationPage.html', {
-        'firstname': firstname
+        'firstname': firstname,
+        'loggedin': loggedin,
+        'role': role,
     }) 
 
 def viewall_reservations(request):
     messages.get_messages(request).used = True
-    user = User.objects.get(id=request.session['user_id'])
     reservations = Reservation.objects.all()
-    if user.role != 'Admin':
+    try:
+        user = User.objects.get(username=request.session.get('username'))
+        if not user.is_staff:
+            messages.error(request, "User not authorized!")
+    except:
         messages.error(request, "User not authorized!")
-    return render(request, 'pages/ReservationComponent/ReservationViewAll.html', {'user': user, 'reservations' : reservations})
+    return render(request, 'pages/ReservationComponent/ReservationViewAll.html', {'reservations' : reservations})
 
 def modify_reservation(request):
     return render(request, "pages/ViewReservationsPage.html")

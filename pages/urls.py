@@ -4,8 +4,8 @@ from pages import views
 from .views import custom_logout  
 
 urlpatterns = [
-    path('', views.login, name='login_page'),
-    path('home/', views.home, name='home'),  
+    path('login/', views.login, name='login_page'),
+    path('', views.home, name='home'),  
     path('reservation/', views.reservation_page, name='reservation_page'), 
     path('reservation/viewall', views.viewall_reservations, name='viewall_reservations'),
     path('reservations/<int:id>/modify/', views.modify_reservation, name='modify_reservation'), 

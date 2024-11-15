@@ -11,29 +11,24 @@
 <body>
     <main class="main">
         <div class="container">
-            <!--
-            {% comment %}
             {% if messages %}
             <div class="message">
                 {% for message in messages %}
                     <p>{{ message }}</p>
                 {% endfor %}
-                <a href="{% url 'login_page'%}" class="login">Login</a>
+                <a href="{% url 'home' %}">Home</a>
             </div>
             {% else %}
-            {% endcomment %}
-            -->
             <header>
                 <h1>Seahawk Restaurant</h1>
                 <nav>
-                    <!-- <a href="../ReservationComponent/ReservationPage.html">Reservations</a> -->
-                    <a href="{% url 'reservation_page' %}">Reservations</a>
-                    <form action="{% url 'logout' %}" method="POST" style="display:inline;">
-                        {% csrf_token %}
-                        <button type="submit">Log out</button>
-                    </form>
-                    <!-- above may not be best way to do this, but keep for now (consider dropdown) -->
-                </nav>
+                <a href="{% url 'reservation_page' %}">Reservations</a>
+                <a href="{% url 'viewall_reservations' %}" id="currentpage">All Reservations</a>
+                <form action="{% url 'logout' %}" method="POST" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit">Log out</button>
+                </form>
+                </nav>  
             </header>
             <!-- Filter Criteria Box-->
             <div class="filter">
@@ -82,7 +77,7 @@
                     </div>
                 {% endfor %}
             </div>
-            <!-- {% comment %}{% endif %}{% endcomment %} -->
+            {% endif %}
         </div>
     </main>
 </body>

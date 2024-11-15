@@ -13,10 +13,17 @@
     <main class="main">
         <div class="container">
             <header>
-                <h1>Seahawk Restaurant</h1>
+                <h1><a href="{% url 'home' %}">Seahawk Restaurant</a></h1>
                 <nav>
                     <a href="{% url 'reservation_page' %}">Reservations</a>
-                    <a href="{% url 'login_page' %}">Login</a>
+                    {% if loggedin == "true" %}
+                        <form action="{% url 'logout' %}" method="POST" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit">Log out</button>
+                        </form>
+                    {% else %}
+                        <a href="{% url 'login_page' %}">Login</a>
+                    {% endif %}
                 </nav>
             </header>
             <div class="body">

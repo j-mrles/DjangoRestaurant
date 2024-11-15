@@ -89,7 +89,7 @@ form {
     cursor: pointer;
 }
 
-button:hover {
+.reservationform button:hover {
     background: #555;
 }
 
