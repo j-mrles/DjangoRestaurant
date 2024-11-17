@@ -58,6 +58,7 @@ def register(request):
     return render(request, "pages/LoginComponent/RegisterPage.html", {})
 
 def reservation_page(request):
+    # combined logic for first name greeting and table number selection
     firstname = None
     username = request.session.get('username')
     if username:
@@ -66,9 +67,11 @@ def reservation_page(request):
             firstname = user.firstname
         except User.DoesNotExist:
             firstname = "Guest"
+    tablenumber = request.GET.get('tablenumber')
     return render(request, 'pages/ReservationComponent/ReservationPage.html', {
-        'firstname': firstname
-    }) 
+        'firstname': firstname,
+        'tablenumber': tablenumber,
+    })
 
 def viewall_reservations(request):
     messages.get_messages(request).used = True
