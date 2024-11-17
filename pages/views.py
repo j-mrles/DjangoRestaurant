@@ -5,10 +5,10 @@ from django.contrib.auth import logout
 from django.contrib import messages
 from django.shortcuts import redirect
 from django.db.models import Q
+import random
 
 def home(request):
-    users = User.objects.all()
-    return render(request, 'pages/home.html', {'users': users})  
+    return render(request, 'pages/LoginComponent/HomePage.html', {})  
 
 def login(request):
 
@@ -24,6 +24,8 @@ def login(request):
             try:
                 user = User.objects.get(username=username, password=password)
                 request.session['user_id'] = user.id
+                # consider below -> remove if doesn't work
+                request.session['username'] = username
                 messages.success(request, "You are logged in successfully!")
                 return redirect('reservation_page')
             except User.DoesNotExist:
@@ -61,7 +63,17 @@ def register(request):
     return render(request, "pages/LoginComponent/RegisterPage.html", {})
 
 def reservation_page(request):
-    return render(request, 'pages/ReservationComponent/ReservationPage.html') 
+    firstname = None
+    username = request.session.get('username')
+    if username:
+        try:
+            user = User.objects.get(username=username)
+            firstname = user.firstname
+        except User.DoesNotExist:
+            firstname = "Guest"
+    return render(request, 'pages/ReservationComponent/ReservationPage.html', {
+        'firstname': firstname
+    }) 
 
 def viewall_reservations(request):
     messages.get_messages(request).used = True
@@ -105,7 +117,12 @@ def search_reservation(request):
             # if reserved_by:
 
     return render(request, "pages/ReservationComponent/ReservationSearch.html", {
-        'reservations':reservations
+        'reservations':reservations,
+        'firstname': first_name,
+        'lastname' : last_name,
+        'date' : date,
+        'time' : time,
+        'tablenum' : tablenum
     })
 
 
@@ -116,3 +133,24 @@ def custom_logout(request):
     logout(request)
     messages.success(request, "You have logged out successfully.")
     return redirect('login_page')  
+
+def table_statuses(request):
+    tables = [
+        {
+            "number": i + 1,
+            # placeholder data for each table's capacity
+            "capacity": random.choice([2, 4, 6]), 
+            # can adjust weights(%) for which is more frequent, available is occuring more
+            "availability": random.choices(["Available", "Reserved"], weights=[75, 15])[0]
+        }
+        # placeholder data for a total of 10 tables
+        for i in range(10)  
+    ]
+
+    selected_table = request.GET.get('tablenumber', '')
+
+    return render(request, 'pages/ReservationComponent/TableStatuses.html', {
+        "tables": tables,
+        # pass selected table to the template
+        "selected_table": selected_table,  
+    })
