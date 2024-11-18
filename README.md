@@ -26,8 +26,7 @@ Before you start, ensure you have the following installed:
 
 - Python 3.10 or higher
 - Django 4.x
-- MySQL 8.x
-- MySQL client (`mysqlclient`)
+
 
 ## Installation
 
@@ -57,11 +56,7 @@ Install the required Python packages:
 pip install -r requirements.txt
 ```
 
-Make sure `mysqlclient` is in `requirements.txt`. If not, install it manually:
 
-```bash
-pip install mysqlclient
-```
 
 
 
@@ -91,6 +86,4 @@ If you want to contribute to this project:
 4. Push to the branch (`git push origin feature/YourFeature`).
 5. Open a pull request.
 
-## License
 
-This project is licensed under the MIT License.

@@ -1,0 +1,83 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seahawk Restaurant - View Reservations</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css'%}">
+    <link rel="stylesheet" href="{% static 'css/ReservationViewAll.css'%}">
+</head>
+<body>
+    <main class="main">
+        <div class="container">
+            {% if messages %}
+            <div class="message">
+                {% for message in messages %}
+                    <p>{{ message }}</p>
+                {% endfor %}
+                <a href="{% url 'home' %}">Home</a>
+            </div>
+            {% else %}
+            <header>
+                <h1>Seahawk Restaurant</h1>
+                <nav>
+                <a href="{% url 'reservation_page' %}">Reservations</a>
+                <a href="{% url 'viewall_reservations' %}" id="currentpage">All Reservations</a>
+                <form action="{% url 'logout' %}" method="POST" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit">Log out</button>
+                </form>
+                </nav>  
+            </header>
+            <!-- Filter Criteria Box-->
+            <div class="filter">
+                <h3>Filter Reservations</h3>
+                <form action="placeholder" method="post" id="filter">
+                    <div class="form-group">
+                        <label for="firstname"> First name: </label>
+                        <input type="text" name="firstname" id="firstname">
+                    </div>
+                    <div class="form-group">
+                        <label for="lastname"> First name: </label>
+                        <input type="text" name="lastname" id="lastname">
+                    </div>
+                    <div class="form-group">
+                        <label for="firstname"> Date: </label>
+                        <input type="date" name="res-date" id="res-date">
+                    </div>
+                    <div class="form-group">
+                        <label for="res-date"> Time: </label>
+                        <input type="time" name="res-time" id="res-time">
+                    </div>
+                    <div class="form-group">
+                        <label for="res-time"> Table: </label>
+                        <input type="number" name="res-date" id="res-date">
+                    </div>
+                    <input type="submit" id="submit" for="filter" value="Filter">
+                </form>
+            </div>
+            <!-- Results box -->
+            <div class="results">
+                <h3>Results</h3>
+                {% for reservation in reservations %}
+                    <div class="result-group">
+                        <p class="result-number">{{ forloop.counter }}</p>
+                        <div class="result-text">
+                            <div class="result-item"><p class="result-item-field">Name:</p><p class="result-item-content">{{reservation.reservedBy.first_name}} {{reservation.reservedBy.last_name}}</p></div>
+                            <div class="result-item"><p class="result-item-field">Date:</p><p class="result-item-content">{{reservation.date}}</p></div>
+                            <div class="result-item"><p class="result-item-field">Time:</p><p class="result-item-content">{{reservation.time}}</p></div>
+                            <div class="result-item"><p class="result-item-field">Table:</p><p class="result-item-content">{{reservation.tablenum}}</p></div>
+                        </div>
+                        <div class="result-options">
+                            <a href="placeholder">Check In</a>
+                            <a href="placeholder">Modify</a>
+                            <a href="placeholder">Remove</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+    </main>
+</body>
