@@ -1,15 +1,10 @@
 from django.db import models
+from django.contrib.auth.models import User
 import datetime
 
-class User(models.Model):
-    firstname = models.CharField(max_length=255, default="John") 
-    lastname = models.CharField(max_length=255, default="Doe")    
-    username = models.CharField(max_length=150, unique=True,  default="Admin") 
-    password = models.CharField(max_length=128,default = "123")  
-    reservationtime = models.TimeField(default=datetime.time(19, 0))  
-    reservationdate = models.DateField(default=datetime.date(2024, 11, 1)) 
-    role = models.CharField(max_length=100, default="Guest")  
-    tablenumber = models.IntegerField(default=1)  
+class ResUser(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    phonenumber = models.CharField(default="000-000-0000", max_length=12)
 
     def __str__(self):
         return f"{self.firstname} {self.lastname} - Table {self.tablenumber}"
@@ -19,7 +14,6 @@ class Reservation(models.Model):
     tablenum = models.IntegerField(default=1)
     date = models.DateField(default=datetime.date(2024, 11, 1))
     time = models.TimeField(default=datetime.time(19, 0))
-    available = models.BooleanField(default=True)
     # looked up below line; don't know if this is how to correctly refer to instance of the table being reserved by a user
     reservedBy = models.ForeignKey(User, null=True, blank=True, on_delete = models.SET_NULL)
 

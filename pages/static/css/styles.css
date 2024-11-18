@@ -41,7 +41,13 @@ header h1 {
     text-decoration: none;
 }
 
+header a {
+    all: unset;
+    cursor: pointer;
+}
+
 nav a {
+    all: unset;
     margin-left: 20px;
     padding: 10px 20px;
     background-color: #d3d3d3;
@@ -49,6 +55,7 @@ nav a {
     text-decoration: none;
     border-radius: 5px;
     font-size: 18px;
+    cursor: pointer;
 }
 
 nav a:hover {
@@ -68,6 +75,14 @@ nav button {
 }
 
 nav button:hover {
+    background-color: #a9a9a9;
+}
+
+nav form {
+    all: unset;
+}
+
+nav #currentpage {
     background-color: #a9a9a9;
 }
 

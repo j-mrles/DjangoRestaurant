@@ -12,14 +12,21 @@
     <main class="main">
         <div class="container">
             <header>
-                <h1>Seahawk Restaurant</h1>
+                <h1><a href="{% url 'home' %}">Seahawk Restaurant</a></h1>
                 <nav>
-                    <a href="{% url 'reservation_page' %}">Reservations</a>
-                    <form action="{% url 'logout' %}" method="POST" style="display:inline;">
-                        {% csrf_token %}
-                        <button type="submit">Log out</button>
-                    </form>
-                </nav>                             
+                    <a href="{% url 'reservation_page' %}" id="currentpage">Reservations</a>
+                    {% if loggedin == "true" %}
+                        {% if role == "employee" %}
+                            <a href="{% url 'viewall_reservations' %}">All Reservations</a>
+                        {% endif %}
+                        <form action="{% url 'logout' %}" method="POST" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit">Log out</button>
+                        </form>
+                    {% else %}
+                        <a href="{% url 'login_page' %}">Login</a>
+                    {% endif %}
+                </nav>                        
             </header>
             <section class="welcomeuser">
                 <!-- Displaying of guest's first name, otherwise referring to customer as Guest -->
@@ -35,22 +42,33 @@
             <section class="reservationform">
                 <h3>Make Reservation</h3>
                 <div class="form-body">
-                    <form action="placeholder" method="POST" id="reservation">
+                    <form action="{% url 'reservation_page' %}" method="POST" id="reservation">
+                            {% csrf_token %}
+                            {% if loggedin != "true" %}
                             <div class="form-group">
                                 <label for="firstname">First Name</label>
-                                <input type="text" id="firstname" name="firstname"> 
+                                <input type="text" id="firstname" name="firstname" required> 
                             </div>
                             <div class="form-group">
                                 <label for="lastname">Last Name</label>
-                                <input type="text" id="firstname" name="firstname"> 
+                                <input type="text" id="lastname" name="lastname" required> 
                             </div>
                             <div class="form-group">
+                                <label for="email">Email Address</label>
+                                <input type="email" id="email" name="email" placeholder="johndoe@mail.com"> 
+                            </div>
+                            <div class="form-group">
+                                <label for="phone">Phone Number</label>
+                                <input type="phone" id="phone" name="phone" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" placeholder="xxx-xxx-xxxx">
+                            </div>
+                            {% endif %}
+                            <div class="form-group">
                                 <label for="resdate">Reservation Date</label>
-                                <input type="date" id="resdate" name="resdate" placeholder="mm/dd/yyyy"> 
+                                <input type="date" id="resdate" name="resdate" placeholder="mm/dd/yyyy" required> 
                             </div>
                             <div class="form-group">
                                 <label for="restime">Reservation Time</label>
-                                <select id="restime" name="restime">
+                                <select id="restime" name="restime" required>
                                     <option value="16:00">4:00pm</option>
                                     <option value="16:30">4:30pm</option>
                                     <option value="17:00">5:00pm</option>
@@ -69,7 +87,7 @@
                             <div class="form-group">
                                 <label for="tablenumber">Table Number</label>
                                 <!-- Added value to pre-fill form, made read only -->
-                                <input type="text" id="tablenumber" name="tablenumber" value="{{ tablenumber }}" readonly> 
+                                <input type="text" id="tablenumber" name="tablenumber" value="{{ tablenumber }}"> 
                             </div>
                             <!-- Form section for viewing available tables -->
                             <div class="form-group">

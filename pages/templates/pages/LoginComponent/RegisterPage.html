@@ -7,25 +7,12 @@
     <title>Seahawk Restaurant - Register</title>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     <link rel="stylesheet" href="{% static 'css/RegisterPage.css' %}">
-    <style>
-        /* not sure if this is the ideal approach but will for now  */
-        .container {
-            border-radius: 20px;
-        }
-        body {
-            background-image: url('../../../static/images/meal-platters.png'); 
-            background-size: cover;
-            background-repeat: no-repeat;
-            background-position: center;
-            min-height: 100vh;
-        }
-    </style>
 </head>
 <body>
     <main class="main">
         <div class="container">
             <header>
-                <h1>Seahawk Restaurant</h1>
+                <h1><a href="{% url 'home' %}">Seahawk Restaurant</a></h1>
                 <nav>
                     <a href="{% url 'reservation_page'%}">Reservations</a>
                     <a href="{% url 'login_page' %}">Login</a>
@@ -43,6 +30,14 @@
                     <div class="form-group">
                         <label for="lastname">Last name:</label>
                         <input type="text" id="lastname" name="lastname" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email Address:</label>
+                        <input type="email" id="email" name="email" placeholder="johndoe@mail.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone Number:</label>
+                        <input type="tel" id="phone" name="phone" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" placeholder="xxx-xxx-xxxx" required>
                     </div>
                     <div class="form-group">
                         <label for="username">Username:</label>
