@@ -7,7 +7,7 @@ from django.contrib import messages
 from django.shortcuts import redirect
 from django.db.models import Q
 import random
-from datetime import datetime, timedelta
+from datetime import datetime, date, time
 
 def home(request):
     loggedin = 'false'
@@ -22,7 +22,7 @@ def home(request):
         })  
 
 def login(request):
-    messages.get_messages(request).used = True                              # clear any messages in request
+    clearmessages(request)                              # clear any messages in request
     if request.method == "POST":                                            # If the request is someone clicking a form button
         # Get the form data (For login, just username and password)
         username = request.POST.get("username")
@@ -43,7 +43,7 @@ def login(request):
 
 def register(request):
     # Clear any messages in the request
-    messages.get_messages(request).used = True
+    clearmessages(request)
     if request.method == "POST":
         # Get form data
         firstname = request.POST.get('firstname')
@@ -72,11 +72,12 @@ def register(request):
     return render(request, "pages/LoginComponent/RegisterPage.html", {})
 
 def reservation_page(request):
-    messages.get_messages(request).used = True                               # Clear any messages
+    clearmessages(request)                               # Clear any messages
     
     # Authenticate user for role-specific UI elements
     loggedin = 'false'
     role = 'user'
+    reservations = None
     firstname, lastname, email, phonenumber, user = None, None, None, None, None
     if request.session.has_key('username'): # If user is logged in
         user = User.objects.get(username=request.session.get('username')) # Get the user object from session 'username' field
@@ -85,6 +86,7 @@ def reservation_page(request):
         lastname = user.last_name
         email = user.email
         phonenumber = user.resuser.phonenumber
+        reservations = Reservation.objects.filter(reservedBy=user)
         # Set login flag and role appropriately for dynamic HTML elements
         loggedin = 'true'
         if user.is_staff:
@@ -92,7 +94,23 @@ def reservation_page(request):
     else:
         firstname = "Guest"
 
-    if request.method == "POST":
+
+    if request.method == "POST":                                                        # If trying to make a reservation
+        # Get information for reservation (date, time, table number)
+        resdate = date.fromisoformat(request.POST.get('resdate'))
+        restime = time.fromisoformat(request.POST.get('restime')+":00")
+        tablenumber = int(request.POST.get('tablenumber'))
+        # Check if table is available during that time
+        if not tableIsAvailable(tablenumber, resdate, restime):
+            # Table is not available
+            messages.error(request, "Table is not available!")
+            return render(request, 'pages/ReservationComponent/ReservationPage.html', {
+                'firstname': firstname,
+                'loggedin': loggedin,
+                'role': role,
+                'reservations': reservations,
+             })  
+        # Table is available
         # If user isn't logged in, get personal details from form
         if user is None:
             firstname = request.POST.get('firstname')
@@ -105,26 +123,25 @@ def reservation_page(request):
                 user.save()
                 resuser = ResUser.objects.create(phonenumber=phonenumber, user=user)
                 resuser.save()
-                
             except:
-                messages.error(request, "Error occured while creating reservation")
-
-        date = datetime.strptime(request.POST.get('resdate'), "%Y-%m-%d")
-        time = datetime.strptime(request.POST.get('restime'), "%H:%M")
-        tablenumber = request.POST.get('tablenumber')
-        reservation = Reservation.objects.create(tablenum=tablenumber, date=date, time=time, reservedBy=user)
-        reservation.save()
+                messages.error(request, "Error occured while saving guest data for reservation")
+        try:        
+            reservation = Reservation.objects.create(tablenum=tablenumber, date=resdate, time=restime, reservedBy=user)
+            reservation.save()
+        except:
+            messages.error(request, "Error occured while creating reservation")
         return redirect('home')
 
     return render(request, 'pages/ReservationComponent/ReservationPage.html', {
         'firstname': firstname,
         'loggedin': loggedin,
         'role': role,
+        'reservations': reservations,
     }) 
     
 
 def viewall_reservations(request):
-    messages.get_messages(request).used = True
+    clearmessages(request)
     reservations = Reservation.objects.all()
     try:
         user = User.objects.get(username=request.session.get('username'))
@@ -178,8 +195,7 @@ def search_reservation(request):
 
 
 def custom_logout(request):
-    if messages.get_messages(request):
-        messages.get_messages(request).used = True
+    clearmessages(request)
     
     logout(request)
     messages.success(request, "You have logged out successfully.")
@@ -207,16 +223,24 @@ def table_statuses(request):
     })
 
 
-def tableAvailability(date, time):
+def tableAvailability(resdate, restime):
     reservations = Reservation.objects.all()
 
-    reservations.filter(date=date)
+    reservations.filter(date=resdate)
 
     tables = [True] * 15
 
     for reservation in reservations:
-
-        if reservation.time < time < reservation.time + timedelta(minutes=120):
-            tables[reservation.tablenum-1] = False
+        print(resdate, restime, reservation.time, reservation.time.replace(hour=reservation.time.hour+2))
+        if reservation.time <= restime <= reservation.time.replace(hour=reservation.time.hour+2): 
+           tables[reservation.tablenum-1] = False
     
+    print(tables)
     return tables
+
+def tableIsAvailable(tablenum, resdate, restime):
+    return tableAvailability(resdate, restime)[tablenum-1]
+
+def clearmessages(request):
+    for message in messages.get_messages(request):
+        message.used = True
