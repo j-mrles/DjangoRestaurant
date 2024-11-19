@@ -14,6 +14,8 @@ class ResUser(models.Model):
 class Reservation(models.Model):
     tablenum = models.IntegerField(default=1)
     date = models.DateField(default=datetime.date.today)
+    firstname = models.CharField(max_length=100, blank=True)
+    lastname = models.CharField(max_length=100, blank=True)
     time = models.TimeField(default=datetime.time(19, 0))
     reservedBy = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
     is_active = models.BooleanField(default=True)

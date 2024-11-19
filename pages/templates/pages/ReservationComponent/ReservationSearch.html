@@ -53,10 +53,15 @@
                         {% if reservations %}
                         {% for reservation in reservations %}
                             <div class="results">
-                                Table {{ reservation.tablenum }} reserved by {{ reservation.reservedBy }} {{ reservation.reservedBy.last_name }} 
-                                on {{ reservation.date }} at {{ reservation.time }}.
+                                Table {{ reservation.tablenum }} reserved by 
+                                {% if reservation.reservedBy %}
+                                    {{ reservation.reservedBy.first_name }} {{ reservation.reservedBy.last_name }}
+                                {% else %}
+                                    Guest
+                                {% endif %}
+                                on {{ reservation.date }} at {{ reservation.time }}
                             </div>
-                        {% endfor %}
+                        {% endfor %}                    
                         {% else %}
                             <div class="noresults">
                                 <p>No reservations were found 
