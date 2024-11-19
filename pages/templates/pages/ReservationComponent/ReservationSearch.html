@@ -4,10 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Seahawk Restaurant - Reservations: search</title>
-    <link rel="stylesheet" href="{% static 'css/styles.css'%}">
-    <link rel="stylesheet" href="{% static 'css/SearchPage.css'%}">
-    <!-- gabe adding a search functionality in sepearate html; subject to change/move -->
+    <title>Seahawk Restaurant - Reservations: Search</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/SearchPage.css' %}">
 </head>
 <body>
     <main class="main">
@@ -15,60 +14,62 @@
             <header>
                 <h1><a href="{% url 'home' %}">Seahawk Restaurant</a></h1>
                 <nav>
-                    <!-- <a href="../ReservationComponent/ReservationPage.html">Reservations</a> -->
                     <a href="{% url 'reservation_page' %}">Reservations</a>
                     <a href="{% url 'login_page' %}">Login</a>
                 </nav>
             </header>
-            <!-- div and section could be redundant, but may separate out inner components more later -->
+
             <section class="searchbar">
-                <h3>Search For Reservations</h3>
+                <h3>Search for Reservations</h3>
                 <form method="GET" action="{% url 'search_page' %}">
                     <div class="search-holder">
                         <div class="search-field">
                             <label for="search-by-firstname">First Name</label>
-                            <input type="text" id="search-by-firstname" name="search-by-firstname"> <!-- value = "Gabe"> -->
+                            <input type="text" id="search-by-firstname" name="firstname" value="{{ request.GET.firstname }}">
                         </div>
                         <div class="search-field">
                             <label for="search-by-lastname">Last Name</label>
-                            <input type="text" id="search-by-lastname" name="search-by-lastname"> <!-- value = "Vega"> -->
+                            <input type="text" id="search-by-lastname" name="lastname" value="{{ request.GET.lastname }}">
                         </div>
                         <div class="search-field">
                             <label for="search-by-resdate">Reservation Date</label>
-                            <input type="date" id="search-by-resdate" name="search-by-resdate"> <!-- value = "2024-11-09"> -->
+                            <input type="date" id="search-by-resdate" name="resdate" value="{{ request.GET.resdate }}">
                         </div>
                         <div class="search-field">
                             <label for="search-by-restime">Reservation Time</label>
-                            <input type="time" id="search-by-restime" name="search-by-restime"> <!-- value = "18:30"> -->
+                            <input type="time" id="search-by-restime" name="restime" value="{{ request.GET.restime }}">
                         </div>
                         <div class="search-field">
                             <label for="search-by-tablenum">Table Number</label>
-                            <input type="text" id="search-by-tablenum" name="search-by-tablenum"> <!-- value = "5"> -->
-                            <!-- consider type change for above -->
+                            <input type="text" id="search-by-tablenum" name="tablenum" value="{{ request.GET.tablenum }}">
                         </div>
-                        <button id = "search-button" type="submit">Search</button>
-                        <!-- Maybe "Find" or "Query" makes more sense than "Search" as a clear verb ? -->
+                        <button id="search-button" type="submit">Search</button>
                     </div>
                 </form>
+
                 <div class="search-results" id="search-results">
-                    <h2>Search Results: </h2>
-                    <!-- see old databases project (use unordered list to display result from wide query search) -->
+                    <h2>Search Results:</h2>
                     <div id="list-of-results">
                         {% if reservations %}
-                            {% for reservation in reservations %}
-                                <div class="results">
-                                    Table {{ reservation.tablenum }} reserved by {{ reservation.reservedBy.firstname }} {{ reservation.reservedBy.lastname }} on {{ reservation.date }} at {{ reservation.time}}.
-                                </div>
-                            {% endfor %}
+                        {% for reservation in reservations %}
+                            <div class="results">
+                                Table {{ reservation.tablenum }} reserved by {{ reservation.reservedBy }} {{ reservation.reservedBy.last_name }} 
+                                on {{ reservation.date }} at {{ reservation.time }}.
+                            </div>
+                        {% endfor %}
                         {% else %}
                             <div class="noresults">
                                 <p>No reservations were found 
-                                    {% if firstname or lastname or date or time or tablenum %} 
-                                    with criteria " {{ firstname }} {{ lastname }} {{ date }} {{ time }} {{ tablenum }} " 
-                                    {% endif %}</p>
+                                    {% if request.GET.firstname or request.GET.lastname or request.GET.resdate or request.GET.restime or request.GET.tablenum %} 
+                                    matching the criteria:
+                                    "{{ request.GET.firstname|default:'' }} {{ request.GET.lastname|default:'' }} {{ request.GET.resdate|default:'' }} {{ request.GET.restime|default:'' }} {{ request.GET.tablenum|default:'' }}".
+                                    {% else %}
+                                    for the given search parameters.
+                                    {% endif %}
+                                </p>
                             </div>
                         {% endif %}
-                    </ul>
+                    </div>
                 </div>
             </section>
         </div>

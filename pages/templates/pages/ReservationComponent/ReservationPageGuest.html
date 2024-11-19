@@ -37,52 +37,54 @@
             <section class="reservationform">
                 <h3>Make Reservation</h3>
                 <div class="form-body">
-                    <form action="placeholder" method="POST" id="reservation">
-                            <div class="form-group">
-                                <label for="firstname">First Name</label>
-                                <input type="text" id="firstname" name="firstname"> 
-                            </div>
-                            <div class="form-group">
-                                <label for="lastname">Last Name</label>
-                                <input type="text" id="firstname" name="firstname"> 
-                            </div>
-                            <div class="form-group">
-                                <label for="resdate">Reservation Date</label>
-                                <input type="date" id="resdate" name="resdate" placeholder="mm/dd/yyyy"> 
-                            </div>
-                            <div class="form-group">
-                                <label for="restime">Reservation Time</label>
-                                <select id="restime" name="restime">
-                                    <option value="16:00">4:00pm</option>
-                                    <option value="16:30">4:30pm</option>
-                                    <option value="17:00">5:00pm</option>
-                                    <option value="17:30">5:30pm</option>
-                                    <option value="18:00">6:00pm</option>
-                                    <option value="18:30">6:30pm</option>
-                                    <option value="19:00">7:00pm</option>
-                                    <option value="19:30">7:30pm</option>
-                                    <option value="20:00">8:00pm</option>
-                                    <option value="20:30">8:30pm</option>
-                                    <option value="21:00">9:00pm</option>
-                                    <option value="21:30">9:30pm</option>
-                                    <option value="22:00">10:00pm</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="tablenumber">Table Number</label>
-                                <!-- Added value to pre-fill form, made read only -->
-                                <input type="text" id="tablenumber" name="tablenumber" value="{{ tablenumber }}" readonly>                            </div>
-                            <!-- Form section for viewing available tables -->
-                            <div class="form-group">
-                                <label for="table_statuses">Table Statuses</label>
-                                <a href="{% url 'table_statuses' %}" class="button">View Available Tables</a>
-                            </div>
+                    <form action="{% url 'make_reservation' %}" method="POST" id="reservation">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="firstname">First Name</label>
+                            <input type="text" id="firstname" name="firstname"> 
+                        </div>
+                        <div class="form-group">
+                            <label for="lastname">Last Name</label>
+                            <input type="text" id="lastname" name="lastname"> 
+                        </div>
+                        <div class="form-group">
+                            <label for="resdate">Reservation Date</label>
+                            <input type="date" id="resdate" name="resdate" placeholder="mm/dd/yyyy"> 
+                        </div>
+                        <div class="form-group">
+                            <label for="restime">Reservation Time</label>
+                            <select id="restime" name="restime">
+                                <option value="16:00">4:00pm</option>
+                                <option value="16:30">4:30pm</option>
+                                <option value="17:00">5:00pm</option>
+                                <option value="17:30">5:30pm</option>
+                                <option value="18:00">6:00pm</option>
+                                <option value="18:30">6:30pm</option>
+                                <option value="19:00">7:00pm</option>
+                                <option value="19:30">7:30pm</option>
+                                <option value="20:00">8:00pm</option>
+                                <option value="20:30">8:30pm</option>
+                                <option value="21:00">9:00pm</option>
+                                <option value="21:30">9:30pm</option>
+                                <option value="22:00">10:00pm</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="tablenumber">Table Number</label>
+                            <!-- Added value to pre-fill form, made read only -->
+                            <input type="text" id="tablenumber" name="tablenumber" value="{{ tablenumber }}" readonly>                            
+                        </div>
+                        <!-- Form section for viewing available tables -->
+                        <div class="form-group">
+                            <label for="table_statuses">Table Statuses</label>
+                            <a href="{% url 'table_statuses' %}" class="button">View Available Tables</a>
+                        </div>
+                        <button type="submit">Reserve</button>
                     </form>
                     <div class="visual">
                         <p>placeholder</p>
                     </div>
                 </div>
-                <button type="submit" form="reservation">Reserve</button>
             </section>
             <section class="search">
                 <h3>Already have a reservation?</h3>
@@ -91,3 +93,4 @@
         </div>    
     </main>
 </body>
+</html>
