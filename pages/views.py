@@ -154,6 +154,10 @@ def viewall_reservations(request):
 def modify_reservation(request):
     return render(request, "pages/ViewReservationsPage.html")
 
+def confirm_reservation(request):
+    reservation = Reservation.objects.all()
+    return render(request, "pages/ReservationComponent/ReservationConfirm.html", {'reservation':reservation})
+
 def search_reservation(request):
     # do search database stuff here :D
 

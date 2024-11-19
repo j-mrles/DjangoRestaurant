@@ -15,8 +15,8 @@
                 <h1>Seahawk Restaurant</h1>
                 <nav>
                     <a href="{% url 'reservation_page' %}">Reservations</a>
-                    <a href="{% url 'login_page' %}">Login</a>
-                    <a href="{% url 'registration_page' %}">Register</a>
+                    <!-- <a href="{% url 'login_page' %}">Login</a>
+                    <a href="{% url 'registration_page' %}">Register</a> -->
                 </nav>
             </header>
 
@@ -32,12 +32,14 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for table in tables%}
+                        {% for table in tables %}
                         <tr>
                             <td>
                                 <!-- Check if table number is available -->
                                 {% if table.availability == "Available" %}
-                                    <a href="{% url 'reservation_page' %}?tablenumber={{ table.number }}" class="button">{{ table.number }}</a>
+                                    <div class="button">
+                                        <a href="{% url 'reservation_page' %}?tablenumber={{ table.number }}" class="button">{{ table.number }}</a>
+                                    </div>
                                 <!-- If table number is reserved, do not display clickable button -->
                                 {% else %}
                                 <button class="button" disabled>{{ table.number }}</button>
@@ -49,10 +51,6 @@
                         {% endfor %}
                     </tbody>
                 </table>
-
-                <div class="button">
-                    <a href="{% url 'reservation_page' %}" class="button">Back to Reservations</a>
-                </div>
             </section>
         </div>
     </main>

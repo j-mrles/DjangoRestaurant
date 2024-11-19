@@ -29,7 +29,13 @@
                 </nav>                        
             </header>
             <section class="welcomeuser">
-                <h2>Welcome, {{ firstname }}</h2>
+                <!-- Displaying of guest's first name, otherwise referring to customer as Guest -->
+                <h2>Welcome, 
+                    {% if firstname %}
+                        {{ firstname }}
+                    {% else %}
+                        Guest
+                    {% endif %}</h2>
             </section>
             <!-- Section that contains the "body" of the form; separated into form-body which contains the form labels and inputs, 
              and then the visual to go alongside it -->
