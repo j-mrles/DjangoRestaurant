@@ -1,0 +1,25 @@
+.confirmation {
+    background: #D9D9D9;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin: 20px auto;
+    text-align: left;
+    min-width: 800px;
+    max-width: 1000px;
+}
+
+.confirmation p {
+    margin: 5px 0px;
+    font-size: large;
+}
+
+.res-data {
+    font-weight: bold;
+}
+
+hr {
+    width: 50%;
+    margin: 10px 0px;
+    align-self: left;
+
+}

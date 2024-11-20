@@ -41,6 +41,11 @@
              and then the visual to go alongside it -->
             <section class="reservationform">
                 <h3>Make Reservation</h3>
+                {% if messages %}
+                    {% for message in messages %}
+                        <p>{{message}}</p>
+                    {% endfor %}
+                {% endif %}
                 <div class="form-body">
                     <!-- if we need to display some error messages or something -->
                     {% if messages %}
@@ -110,10 +115,25 @@
                 <button type="submit" form="reservation">Reserve</button>
             </section>
             <!-- Section that contains search button below the main form section -->
-            <section class="search">
-                <h3>Already have a reservation?</h3>
-                <a href="{% url 'search_page' %}">Search</a>
-            </section>
+             {% if loggedin == 'true' %}
+                <section class="userreservations">
+                    <h3>Your Reservations</h3>
+                    {% if reservations %}
+                        <div class="reservations">
+                            {% for reservation in reservations %}
+                                <p>{{ reservation.date }}, {{ reservation.time }}, {{ reservation.tablenum }}</p>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p>You currently do not have any reservations</p>
+                    {% endif %}
+                </section>
+            {% else %}
+                <section class="search">
+                    <h3>Already have a reservation?</h3>
+                    <a href="{% url 'search_page' %}">Search</a>
+                </section>
+            {% endif %}
         </div>    
     </main>
 </body>
