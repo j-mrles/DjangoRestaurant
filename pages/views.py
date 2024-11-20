@@ -7,7 +7,7 @@ from django.contrib import messages
 from django.shortcuts import redirect
 from django.db.models import Q
 import random
-from datetime import datetime, date, time
+from datetime import datetime, date, time, timedelta
 
 def home(request):
     loggedin = 'false'
@@ -130,7 +130,8 @@ def reservation_page(request):
             reservation.save()
         except:
             messages.error(request, "Error occured while creating reservation")
-        return redirect('home')
+            return redirect('reservation_page')
+        return redirect('confirm_reservation', reservation_id=reservation.id)
 
     return render(request, 'pages/ReservationComponent/ReservationPage.html', {
         'firstname': firstname,
@@ -154,10 +155,15 @@ def viewall_reservations(request):
 def modify_reservation(request):
     return render(request, "pages/ViewReservationsPage.html")
 
-def confirm_reservation(request):
-    reservation = Reservation.objects.all()
-    return render(request, "pages/ReservationComponent/ReservationConfirm.html", {'reservation':reservation})
+def confirm_reservation(request, reservation_id):
+    try:
+        reservation = Reservation.objects.get(id=reservation_id)
+    except Reservation.DoesNotExist:
+        return redirect('reservation_page')
+    return render(request, "pages/ReservationComponent/ReservationConfirm.html", {
+        'reservation':reservation})
 
+'''
 def search_reservation(request):
     # do search database stuff here :D
 
@@ -196,7 +202,26 @@ def search_reservation(request):
         'time' : time,
         'tablenum' : tablenum
     })
+'''
+def search_reservation(request):
+    email = request.GET.get('search-by-email')
+    phone = request.GET.get('search-by-phone')
+    reservations = None
 
+    if email and phone:
+        try:
+            user = User.objects.get(email=email)
+            reservations = Reservation.objects.filter(reservedBy=user, reservedBy__resuser__phonenumber=phone)
+        except User.DoesNotExist:
+            reservations = None
+    else:
+        reservations = None
+    
+    return render(request, 'pages/ReservationComponent/ReservationSearch.html', {
+        'reservations': reservations,
+        'email': email,
+        'phone': phone,
+    })
 
 def custom_logout(request):
     clearmessages(request)
@@ -235,7 +260,7 @@ def tableAvailability(resdate, restime):
     tables = [True] * 15
 
     for reservation in reservations:
-        print(resdate, restime, reservation.time, reservation.time.replace(hour=reservation.time.hour+2))
+        #print(resdate, restime, reservation.time, reservation.time.replace(hour=reservation.time.hour+2))
         if reservation.time <= restime <= reservation.time.replace(hour=reservation.time.hour+2): 
            tables[reservation.tablenum-1] = False
     

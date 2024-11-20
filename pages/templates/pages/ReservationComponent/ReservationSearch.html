@@ -26,28 +26,14 @@
                 <form method="GET" action="{% url 'search_page' %}">
                     <div class="search-holder">
                         <div class="search-field">
-                            <label for="search-by-firstname">First Name</label>
-                            <input type="text" id="search-by-firstname" name="search-by-firstname"> <!-- value = "Gabe"> -->
+                            <label for="search-by-email">Email</label>
+                            <input type="email" id="search-by-email" name="search-by-email">
                         </div>
                         <div class="search-field">
-                            <label for="search-by-lastname">Last Name</label>
-                            <input type="text" id="search-by-lastname" name="search-by-lastname"> <!-- value = "Vega"> -->
-                        </div>
-                        <div class="search-field">
-                            <label for="search-by-resdate">Reservation Date</label>
-                            <input type="date" id="search-by-resdate" name="search-by-resdate"> <!-- value = "2024-11-09"> -->
-                        </div>
-                        <div class="search-field">
-                            <label for="search-by-restime">Reservation Time</label>
-                            <input type="time" id="search-by-restime" name="search-by-restime"> <!-- value = "18:30"> -->
-                        </div>
-                        <div class="search-field">
-                            <label for="search-by-tablenum">Table Number</label>
-                            <input type="text" id="search-by-tablenum" name="search-by-tablenum"> <!-- value = "5"> -->
-                            <!-- consider type change for above -->
+                            <label for="search-by-phone">Phone Number</label>
+                            <input type="phone" id="phone" name="phone" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" placeholder="xxx-xxx-xxxx">
                         </div>
                         <button id = "search-button" type="submit">Search</button>
-                        <!-- Maybe "Find" or "Query" makes more sense than "Search" as a clear verb ? -->
                     </div>
                 </form>
                 <div class="search-results" id="search-results">
@@ -63,9 +49,10 @@
                         {% else %}
                             <div class="noresults">
                                 <p>No reservations were found 
-                                    {% if firstname or lastname or date or time or tablenum %} 
-                                    with criteria " {{ firstname }} {{ lastname }} {{ date }} {{ time }} {{ tablenum }} " 
-                                    {% endif %}</p>
+                                    {% if email or phone %} 
+                                    with criteria "Email: {{ email }} and Phone: {{ phone }}" 
+                                    {% endif %}
+                                </p>
                             </div>
                         {% endif %}
                     </ul>
