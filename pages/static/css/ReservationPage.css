@@ -159,6 +159,24 @@ form {
     background: #555;
 }
 
+.form-group a {
+    all: unset;
+    padding: 7px 0px 6px 0px;
+    background: #333;
+    color: #fff;
+    border-radius: 4px;
+    cursor: pointer;
+    display: block;
+    font-size: medium;
+    text-align: center;
+    width: 100%;
+    margin-top: 6px;
+}
+
+.form-group a:hover {
+    background: #555;
+}
+
 .search {
     background: #D9D9D9;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
