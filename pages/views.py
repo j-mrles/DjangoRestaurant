@@ -113,18 +113,19 @@ def reservation_page(request):
         # Table is available
         # If user isn't logged in, get personal details from form
         if user is None:
+            username = f"guest_{User.objects.count()}"
             firstname = request.POST.get('firstname')
             lastname = request.POST.get('lastname')
             email = request.POST.get('email')
             phonenumber = request.POST.get('phone')
             
-            try:
-                user = User.objects.create(first_name=firstname, last_name=lastname, email=email)
-                user.save()
-                resuser = ResUser.objects.create(phonenumber=phonenumber, user=user)
-                resuser.save()
-            except:
-                messages.error(request, "Error occured while saving guest data for reservation")
+        try:
+            user = User.objects.create(first_name=firstname, last_name=lastname, email=email, username=username)
+            user.save()
+            resuser = ResUser.objects.create(phonenumber=phonenumber, user=user)
+            resuser.save()
+        except:
+            messages.error(request, "Error occured while saving guest data for reservation")
         try:        
             reservation = Reservation.objects.create(tablenum=tablenumber, date=resdate, time=restime, reservedBy=user)
             reservation.save()
@@ -148,12 +149,47 @@ def viewall_reservations(request):
         user = User.objects.get(username=request.session.get('username'))
         if not user.is_staff:
             messages.error(request, "User not authorized!")
-    except:
+            return render(request, 'pages/ReservationComponent/ReservationViewAll.html', {
+                'reservations': [],
+            })
+    except User.DoesNotExist:
         messages.error(request, "User not authorized!")
-    return render(request, 'pages/ReservationComponent/ReservationViewAll.html', {'reservations' : reservations})
+        return render(request, 'pages/ReservationComponent/ReservationViewAll.html', {
+            'reservations' : []
+        })
+    
+    if request.method == 'POST':
+        firstname = request.POST.get('firstname')
+        lastname = request.POST.get('lastname')
+        resdate = request.POST.get('res-date')
+        restime = request.POST.get('res-time')
+        tablenum = request.POST.get('tablenum')
+
+        if firstname:
+            reservations = reservations.filter(reservedBy__firstname__icontains=firstname)
+        if lastname:
+            reservations = reservations.filter(reservedBy__lastname__icontains=lastname)
+        if resdate:
+            reservations = reservations.filter(date=resdate)
+        if restime:
+            reservations = reservations.filter(time=restime)
+        if tablenum:
+            reservations = reservations.filter(tablenum=tablenum)
+    return render(request, 'pages/ReservationComponent/ReservationViewAll.html', {
+        'reservations': reservations,
+    })
+
+# def modify_reservation(request):
+#     return render(request, "pages/ViewReservationsPage.html")
 
 def modify_reservation(request):
-    return render(request, "pages/ViewReservationsPage.html")
+    return render(request, 'pages/ModifyReservation.html')
+
+def checkin_reservation(request):
+    return render(request, 'pages/CheckinReservation.html')
+
+def remove_reservation(request):
+    return render(request, 'pages/RemoveReservation.html')
 
 def confirm_reservation(request, reservation_id):
     try:
@@ -261,7 +297,12 @@ def tableAvailability(resdate, restime):
 
     for reservation in reservations:
         #print(resdate, restime, reservation.time, reservation.time.replace(hour=reservation.time.hour+2))
-        if reservation.time <= restime <= reservation.time.replace(hour=reservation.time.hour+2): 
+        # added below: there was an error where making a reservation late would cause the time to go past...
+        #... midnight, and an error would be thrown, so now it will wrap around back to '0' (past midnight)
+        endHour = (reservation.time.hour + 2) % 24
+        endTime = reservation.time.replace(hour=endHour)
+        
+        if reservation.time <= restime <= endTime: 
            tables[reservation.tablenum-1] = False
     
     print(tables)

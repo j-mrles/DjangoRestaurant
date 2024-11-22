@@ -31,7 +31,7 @@
                         </div>
                         <div class="search-field">
                             <label for="search-by-phone">Phone Number</label>
-                            <input type="phone" id="phone" name="phone" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" placeholder="xxx-xxx-xxxx">
+                            <input type="phone" id="search-by-phone" name="search-by-phone" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" placeholder="xxx-xxx-xxxx">
                         </div>
                         <button id = "search-button" type="submit">Search</button>
                     </div>
@@ -43,7 +43,7 @@
                         {% if reservations %}
                             {% for reservation in reservations %}
                                 <div class="results">
-                                    Table {{ reservation.tablenum }} reserved by {{ reservation.reservedBy.firstname }} {{ reservation.reservedBy.lastname }} on {{ reservation.date }} at {{ reservation.time}}.
+                                    Table {{ reservation.tablenum }} reserved by {{ reservation.reservedBy.first_name }} {{ reservation.reservedBy.last_name }} for {{ reservation.date }} at {{ reservation.time}}.
                                 </div>
                             {% endfor %}
                         {% else %}
