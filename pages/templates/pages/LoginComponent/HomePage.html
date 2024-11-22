@@ -26,6 +26,13 @@
                     {% endif %}
                 </nav>
             </header>
+            {% if messages %}
+                    {% for message in messages %}
+                        <div class="messages">
+                             <p>{{ message }}</p>
+                        </div>
+                    {% endfor %}
+                {% endif %}
             <div class="body">
                 <section class="welcome">
                     <h3>Welcome to Seahawk Restaurant</h3>

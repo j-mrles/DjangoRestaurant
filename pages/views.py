@@ -75,6 +75,7 @@ def reservation_page(request):
     clearmessages(request)                               # Clear any messages
     
     # Authenticate user for role-specific UI elements
+    today = str(date.today())
     loggedin = 'false'
     role = 'user'
     reservations = None
@@ -113,13 +114,14 @@ def reservation_page(request):
         # Table is available
         # If user isn't logged in, get personal details from form
         if user is None:
+            username = str(User.objects.count())
             firstname = request.POST.get('firstname')
             lastname = request.POST.get('lastname')
             email = request.POST.get('email')
             phonenumber = request.POST.get('phone')
             
             try:
-                user = User.objects.create(first_name=firstname, last_name=lastname, email=email)
+                user = User.objects.create(first_name=firstname, last_name=lastname, email=email, username=username)
                 user.save()
                 resuser = ResUser.objects.create(phonenumber=phonenumber, user=user)
                 resuser.save()
@@ -137,6 +139,7 @@ def reservation_page(request):
         'loggedin': loggedin,
         'role': role,
         'reservations': reservations,
+        'today': today,
     }) 
     
 
@@ -239,11 +242,16 @@ def tableAvailability(resdate, restime):
 
     reservations.filter(date=resdate)
 
-    tables = [True] * 15
+    tables = [True] * 10
 
     for reservation in reservations:
-        print(resdate, restime, reservation.time, reservation.time.replace(hour=reservation.time.hour+2))
-        if reservation.time <= restime <= reservation.time.replace(hour=reservation.time.hour+2): 
+        if reservation.time.hour >= 22:
+            endtime = reservation.time.replace(hour=23, minute=59, second = 59)
+        else:
+            endtime = reservation.time.replace(hour=reservation.time.hour+2)
+        
+        print(resdate, restime, reservation.time, endtime)
+        if reservation.time <= restime <= endtime: 
            tables[reservation.tablenum-1] = False
     
     print(tables)
