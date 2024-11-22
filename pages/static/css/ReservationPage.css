@@ -66,6 +66,54 @@ form {
     margin: 20px;
 }
 
+.visual table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #d9d9d9;
+}
+
+.visual thead {
+    font-size: large;
+}
+
+.visual th {
+    height: 30px;
+    text-align: center;
+}
+
+.visual tr {
+    height: 30px;
+}
+
+.visual td {
+    text-align: center;
+    border-radius: 5px;
+}
+
+.button {
+    padding: 1px 0px;
+    background-color: #333;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none; 
+    display: inline-block;  
+    text-align: center;
+    font-size: medium;
+    width: 50%;
+}
+
+.button:hover {
+    background-color: #555;
+}
+
+.button:disabled {
+    background-color: #ccc;
+    color: #666;
+    cursor: not-allowed;
+}
+
 .form-body {
     display:inline-flex;
     justify-content: space-between;

@@ -76,6 +76,7 @@ def reservation_page(request):
     
     # Authenticate user for role-specific UI elements
     today = str(date.today())
+    tablenumber = request.GET.get('tablenumber')
     loggedin = 'false'
     role = 'user'
     reservations = None
@@ -140,6 +141,7 @@ def reservation_page(request):
         'role': role,
         'reservations': reservations,
         'today': today,
+        'tablenumber': tablenumber
     }) 
     
 

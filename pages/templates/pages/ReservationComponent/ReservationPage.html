@@ -95,16 +95,37 @@
                             <div class="form-group">
                                 <label for="tablenumber">Table Number</label>
                                 <!-- Added value to pre-fill form, made read only -->
-                                <input type="number" id="tablenumber" name="tablenumber" min="1" max="10" value="{{ tablenumber }}"> 
+                                <input type="number" id="tablenumber" name="tablenumber" min="1" max="10" placeholder="Select From Chart" value="{{ tablenumber }}" readonly> 
                             </div>
                             <!-- Form section for viewing available tables -->
                             <div class="form-group">
                                 <label for="table_statuses">Table Statuses</label>
-                                <a href="{% url 'table_statuses' %}" class="button">View Available Tables</a>
+                                <a href="{% url 'table_statuses' %}">View Available Tables</a>
                             </div>
                     </form>
                     <div class="visual">
-                        <p>placeholder</p>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Number</th>
+                                    <th>Capacity</th>
+                                    <th>Availability</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <!-- Check if table number is available -->
+                                        <div class="button">
+                                            <a href="{% url 'reservation_page' %}?tablenumber=5" class="button">5</a>
+                                        </div>
+                                        <!-- If table number is reserved, do not display clickable button -->
+                                    </td>
+                                    <td>10</td>
+                                    <td>Available</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
                 <button type="submit" form="reservation">Reserve</button>
