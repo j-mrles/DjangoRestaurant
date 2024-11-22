@@ -145,6 +145,7 @@ def reservation_page(request):
 def viewall_reservations(request):
     clearmessages(request)
     reservations = Reservation.objects.all()
+    context = {'reservatons': reservations}
     try:
         user = User.objects.get(username=request.session.get('username'))
         if not user.is_staff:
@@ -161,35 +162,66 @@ def viewall_reservations(request):
     if request.method == 'POST':
         firstname = request.POST.get('firstname')
         lastname = request.POST.get('lastname')
-        resdate = request.POST.get('res-date')
-        restime = request.POST.get('res-time')
+        resdate = request.POST.get('res_date')
+        restime = request.POST.get('res_time')
         tablenum = request.POST.get('tablenum')
 
         if firstname:
-            reservations = reservations.filter(reservedBy__firstname__icontains=firstname)
+            reservations = reservations.filter(reservedBy__first_name__iexact=firstname)
+            context['firstname'] = firstname
         if lastname:
-            reservations = reservations.filter(reservedBy__lastname__icontains=lastname)
+            reservations = reservations.filter(reservedBy__last_name__iexact=lastname)
+            context['lastname'] = lastname
         if resdate:
             reservations = reservations.filter(date=resdate)
+            context['res_date'] = resdate
         if restime:
             reservations = reservations.filter(time=restime)
+            context['res_time'] = restime
         if tablenum:
             reservations = reservations.filter(tablenum=tablenum)
-    return render(request, 'pages/ReservationComponent/ReservationViewAll.html', {
-        'reservations': reservations,
-    })
+            context['tablenum'] = tablenum
+
+        context['reservations'] = reservations
+
+    return render(request, 'pages/ReservationComponent/ReservationViewAll.html', context)
 
 # def modify_reservation(request):
 #     return render(request, "pages/ViewReservationsPage.html")
 
-def modify_reservation(request):
-    return render(request, 'pages/ModifyReservation.html')
+def modify_reservation(request, reservation_id):
+    try:
+        reservation = Reservation.objects.get(id=reservation_id)
+    except Reservation.DoesNotExist:
+        return redirect('viewall_reservation')
+    return render(request, 'pages/ReservationComponent/ModifyReservation.html', {
+        'reservation': reservation
+    })
 
-def checkin_reservation(request):
-    return render(request, 'pages/CheckinReservation.html')
+def checkin_reservation(request, reservation_id):
+    try:
+        reservation = Reservation.objects.get(id=reservation_id)
+    except Reservation.DoesNotExist:
+        return redirect('viewall_reservation')
+    return render(request, 'pages/ReservationComponent/CheckinReservation.html', {
+        'reservation': reservation
+    })
 
-def remove_reservation(request):
-    return render(request, 'pages/RemoveReservation.html')
+def remove_reservation(request, reservation_id):
+    try:
+        reservation = Reservation.objects.get(id=reservation_id)
+    except Reservation.DoesNotExist:
+        return redirect('viewall_reservation')
+    
+    if request.method == 'POST' and 'confirm' in request.POST:
+        reservation.delete() # feels like not enough code to actually do it but we'll see
+        return render(request, 'pages/ReservationComponent/RemoveReservation.html', {
+            'success': True
+        })    
+    return render(request, 'pages/ReservationComponent/RemoveReservation.html', {
+        'reservation': reservation,
+        'success': False
+    })
 
 def confirm_reservation(request, reservation_id):
     try:
@@ -199,46 +231,6 @@ def confirm_reservation(request, reservation_id):
     return render(request, "pages/ReservationComponent/ReservationConfirm.html", {
         'reservation':reservation})
 
-'''
-def search_reservation(request):
-    # do search database stuff here :D
-
-    reservations = []
-
-    if request.method == "GET":
-        first_name = request.GET.get('search-by-firstname','')
-        last_name = request.GET.get('search-by-lastname','')
-        date = request.GET.get('search-by-resdate','')
-        time = request.GET.get('search-by-restime','')
-        tablenum = request.GET.get('search-by-tablenum','')
-        # available = request.GET.get('search-by-availability','')
-        # reserved_by = request.GET.get('search-by-reservedby','')  # this is a little janky
-        
-        if first_name or last_name or date or time or tablenum:
-            reservations = Reservation.objects.all()
-
-            if first_name:
-                reservations = reservations.filter(reservedBy__firstname__icontains=first_name)
-            if last_name:
-                reservations = reservations.filter(reservedBy__lastname__icontains=last_name)
-            if date:
-                reservations = reservations.filter(date=date)
-            if time:
-                reservations = reservations.filter(time=time)
-            if tablenum:
-                reservations = reservations.filter(tablenum=tablenum)
-            # if available:
-            # if reserved_by:
-
-    return render(request, "pages/ReservationComponent/ReservationSearch.html", {
-        'reservations':reservations,
-        'firstname': first_name,
-        'lastname' : last_name,
-        'date' : date,
-        'time' : time,
-        'tablenum' : tablenum
-    })
-'''
 def search_reservation(request):
     email = request.GET.get('search-by-email')
     phone = request.GET.get('search-by-phone')
