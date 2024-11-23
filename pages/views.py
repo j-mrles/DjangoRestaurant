@@ -194,11 +194,46 @@ def modify_reservation(request, reservation_id):
         reservation = Reservation.objects.get(id=reservation_id)
     except Reservation.DoesNotExist:
         return redirect('viewall_reservation')
+    
+    success = False
+    failure_reason = None
+    neutral = False
+    is_submitted = False
+
+    if request.method == 'POST':
+        is_submitted = True
+        new_date = request.POST.get('date') or reservation.date
+        new_time = request.POST.get('time') or reservation.time
+        new_tablenumber = request.POST.get('tablenum') or reservation.tablenum
+
+        if new_date == reservation.date and new_time == reservation.time and new_tablenumber == reservation.tablenum:
+            neutral = True
+        elif not tableIsAvailable(int(new_tablenumber), new_date, new_time):
+            success = False
+            failure_reason = f"Table {new_tablenumber} is already reserved at {new_date} {new_time}"
+        else:
+            reservation.date = new_date
+            reservation.time = new_time
+            reservation.tablenum = new_tablenumber
+            reservation.save()
+            success = True
+        
+        # someone can try and fix if they want; think this can be done with datetime but ugh
+        # formatted_date = reservation.date.strftime("%B %d, %Y")
+        # formatted_time = reservation.time.strftime("%I:%M %p")
+
     return render(request, 'pages/ReservationComponent/ModifyReservation.html', {
-        'reservation': reservation
+        'reservation': reservation,
+        'reservation_id': reservation_id,
+        'success': success if is_submitted else None,
+        'neutral': neutral if is_submitted else None,
+        'failure_reason': failure_reason if is_submitted else None,
+        # 'formatted_date': formatted_date,
+        # 'formatted_time': formatted_time
     })
 
 def checkin_reservation(request, reservation_id):
+    # no real functionality yet
     try:
         reservation = Reservation.objects.get(id=reservation_id)
     except Reservation.DoesNotExist:
@@ -213,10 +248,10 @@ def remove_reservation(request, reservation_id):
     except Reservation.DoesNotExist:
         return redirect('viewall_reservation')
     
-    if request.method == 'POST' and 'confirm' in request.POST:
+    if request.method == 'POST' and 'confirm' in request.POST:  # confirm POST obv but also that confirm was pressed
         reservation.delete() # feels like not enough code to actually do it but we'll see
         return render(request, 'pages/ReservationComponent/RemoveReservation.html', {
-            'success': True
+            'success': True  # for display stuff
         })    
     return render(request, 'pages/ReservationComponent/RemoveReservation.html', {
         'reservation': reservation,
@@ -281,9 +316,14 @@ def table_statuses(request):
 
 
 def tableAvailability(resdate, restime):
+    if isinstance(restime, str):
+        restime_datetime = datetime.strptime(restime, "%H:%M").time()
+    else:
+        restime_datetime = restime
+
     reservations = Reservation.objects.all()
 
-    reservations.filter(date=resdate)
+    reservations = reservations.filter(date=resdate)
 
     tables = [True] * 15
 
@@ -294,7 +334,7 @@ def tableAvailability(resdate, restime):
         endHour = (reservation.time.hour + 2) % 24
         endTime = reservation.time.replace(hour=endHour)
         
-        if reservation.time <= restime <= endTime: 
+        if reservation.time <= restime_datetime <= endTime: 
            tables[reservation.tablenum-1] = False
     
     print(tables)
