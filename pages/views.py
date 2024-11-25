@@ -7,7 +7,7 @@ from django.contrib import messages
 from django.shortcuts import redirect
 from django.db.models import Q
 import random
-from datetime import datetime, date, time
+from datetime import datetime, date, time, timedelta
 
 def home(request):
     loggedin = 'false'
@@ -77,10 +77,11 @@ def reservation_page(request):
     # Authenticate user for role-specific UI elements
     today = str(date.today())
     tablenumber = request.GET.get('tablenumber')
-    loggedin = 'false'
-    role = 'user'
-    reservations = None
-    firstname, lastname, email, phonenumber, user = None, None, None, None, None
+    restime = request.GET.get('restime')
+    resdate = request.GET.get('resdate')
+    print(resdate,restime)
+    loggedin, role = 'false', 'user'
+    firstname, lastname, email, phonenumber, user, reservations = None, None, None, None, None, None
     if request.session.has_key('username'): # If user is logged in
         user = User.objects.get(username=request.session.get('username')) # Get the user object from session 'username' field
         # Fill out variables from user account
@@ -141,7 +142,9 @@ def reservation_page(request):
         'role': role,
         'reservations': reservations,
         'today': today,
-        'tablenumber': tablenumber
+        'tablenumber': tablenumber,
+        'restime': restime,
+        'resdate': resdate
     }) 
     
 
@@ -218,21 +221,51 @@ def custom_logout(request):
     return redirect('home')  # redirect('login_page')  
 
 def table_statuses(request):
+
+    resdate = request.GET.get('resdate')
+    restime = request.GET.get('restime')
+    now = datetime.now()
+
+    if resdate == None:
+        resdate = date(day=now.day, month=now.month, year=now.year)
+    else:
+        resdate = date.fromisoformat(resdate)
+    if restime == None:
+        restime = now + (datetime.min - now) % timedelta(minutes=30)
+        restime = restime.time()
+        if restime < time(hour=16):
+            restime = time(hour=16)
+        if restime > time(hour=22):
+            restime = time(hour=16)
+            resdate = resdate + timedelta(days=1)
+    else:
+        restime = time.fromisoformat(restime + ":00")
+
+    availability = tableAvailability(resdate, restime)
     tables = [
-        {
-            "number": i + 1,
-            # placeholder data for each table's capacity
-            "capacity": random.choice([2, 4, 6]), 
-            # can adjust weights(%) for which is more frequent, available is occuring more
-            "availability": random.choices(["Available", "Reserved"], weights=[75, 15])[0]
-        }
-        # placeholder data for a total of 10 tables
-        for i in range(10)  
+        {"number": 1, "capacity": 2, "availability": 'Available' if availability[0] else 'Unavailable'},
+        {"number": 2, "capacity": 2, "availability": 'Available' if availability[1] else 'Unavailable'},
+        {"number": 3, "capacity": 2, "availability": 'Available' if availability[2] else 'Unavailable'},
+        {"number": 4, "capacity": 2, "availability": 'Available' if availability[3] else 'Unavailable'},
+        {"number": 5, "capacity": 4, "availability": 'Available' if availability[4] else 'Unavailable'},
+        {"number": 6, "capacity": 4, "availability": 'Available' if availability[5] else 'Unavailable'},
+        {"number": 7, "capacity": 4, "availability": 'Available' if availability[6] else 'Unavailable'},
+        {"number": 8, "capacity": 4, "availability": 'Available' if availability[7] else 'Unavailable'},
+        {"number": 9, "capacity": 4, "availability": 'Available' if availability[8] else 'Unavailable'},
+        {"number": 10, "capacity": 6, "availability": 'Available' if availability[9] else 'Unavailable'},
+        {"number": 11, "capacity": 6, "availability": 'Available' if availability[10] else 'Unavailable'},
+        {"number": 12, "capacity": 6, "availability": 'Available' if availability[11] else 'Unavailable'},
+        {"number": 13, "capacity": 8, "availability": 'Available' if availability[12] else 'Unavailable'},
+        {"number": 14, "capacity": 8, "availability": 'Available' if availability[13] else 'Unavailable'},
+        {"number": 15, "capacity": 12, "availability": 'Available' if availability[14] else 'Unavailable'},
     ]
 
     selected_table = request.GET.get('tablenumber', '')
 
     return render(request, 'pages/ReservationComponent/TableStatuses.html', {
+        'time': str(restime),
+        'urltime': str(restime).replace(':', '%3A'),
+        'date': str(resdate),
         "tables": tables,
         # pass selected table to the template
         "selected_table": selected_table,  
@@ -240,20 +273,27 @@ def table_statuses(request):
 
 
 def tableAvailability(resdate, restime):
+    if restime.hour == 22:
+        resendtime = restime.replace(hour=23, minute=59, second=59)
+    else:
+        print(restime)
+        resendtime = restime.replace(hour=restime.hour+2)
+
     reservations = Reservation.objects.all()
 
-    reservations.filter(date=resdate)
+    reservations = reservations.filter(date=resdate)
 
-    tables = [True] * 10
+    tables = [True] * 15
 
     for reservation in reservations:
         if reservation.time.hour >= 22:
             endtime = reservation.time.replace(hour=23, minute=59, second = 59)
         else:
+            print(reservation.time)
             endtime = reservation.time.replace(hour=reservation.time.hour+2)
         
-        print(resdate, restime, reservation.time, endtime)
-        if reservation.time <= restime <= endtime: 
+        print(resdate, reservation.date, restime, reservation.time, endtime, reservation.tablenum)
+        if reservation.time < restime < endtime or reservation.time < resendtime < endtime: 
            tables[reservation.tablenum-1] = False
     
     print(tables)

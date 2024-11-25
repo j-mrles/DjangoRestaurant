@@ -20,9 +20,35 @@
                 </nav>
             </header>
 
-            <section class="TableStatuses">
+            <section class="tablestatuses">
                 <h2>Available Tables</h2>
-                
+                <form method="GET" action="{% url 'table_statuses'%}" id="datetime">
+                    <div class="form-group">
+                        <label for="resdate">Reservation Date</label>
+                        <input type="date" id="resdate" name="resdate" value="{{ date }}" required> 
+                    </div>
+                    <div class="form-group">
+                        <label for="restime">Reservation Time</label>
+                        <select id="restime" name="restime" required>
+                            <option value="16:00" {% if time == "16:00:00" %} selected="selected" {% endif %}>4:00pm</option>
+                            <option value="16:30" {% if time == "16:30:00" %} selected="selected" {% endif %}>4:30pm</option>
+                            <option value="17:00" {% if time == "17:00:00" %} selected="selected" {% endif %}>5:00pm</option>
+                            <option value="17:30" {% if time == "17:30:00" %} selected="selected" {% endif %}>5:30pm</option>
+                            <option value="18:00" {% if time == "18:00:00" %} selected="selected" {% endif %}>6:00pm</option>
+                            <option value="18:30" {% if time == "18:30:00" %} selected="selected" {% endif %}>6:30pm</option>
+                            <option value="19:00" {% if time == "19:00:00" %} selected="selected" {% endif %}>7:00pm</option>
+                            <option value="19:30" {% if time == "19:30:00" %} selected="selected" {% endif %}>7:30pm</option>
+                            <option value="20:00" {% if time == "20:00:00" %} selected="selected" {% endif %}>8:00pm</option>
+                            <option value="20:30" {% if time == "20:30:00" %} selected="selected" {% endif %}>8:30pm</option>
+                            <option value="21:00" {% if time == "21:00:00" %} selected="selected" {% endif %}>9:00pm</option>
+                            <option value="21:30" {% if time == "21:30:00" %} selected="selected" {% endif %}>9:30pm</option>
+                            <option value="22:00" {% if time == "22:00:00" %} selected="selected" {% endif %}>10:00pm</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" value="submit" for="datetime">Check</button>
+                    </div>
+                </form>
                 <table>
                     <thead>
                         <tr>
@@ -38,7 +64,7 @@
                                 <!-- Check if table number is available -->
                                 {% if table.availability == "Available" %}
                                     <div class="button">
-                                        <a href="{% url 'reservation_page' %}?tablenumber={{ table.number }}" class="button">{{ table.number }}</a>
+                                        <a href="{% url 'reservation_page' %}?tablenumber={{ table.number }}&restime={{ urltime }}&resdate={{ date }}" class="button">{{ table.number }}</a>
                                     </div>
                                 <!-- If table number is reserved, do not display clickable button -->
                                 {% else %}
