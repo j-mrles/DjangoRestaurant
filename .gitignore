@@ -6913,7 +6913,6 @@ venv/Lib/site-packages/pip-24.3.1.dist-info/WHEEL
 pages/migrations/__pycache__/0005_alter_reservation_reservedby_and_more.cpython-311.pyc
 pages/migrations/__pycache__/0006_rename_starttime_reservation_time_and_more.cpython-311.pyc
 pages/migrations/__pycache__/0007_alter_reservation_date.cpython-311.pyc
-=======
-# Created by venv; see https://docs.python.org/3/library/venv.html
-*
->>>>>>> cc1cf0262b6128270d747dd3d8b51994a03eb9a6
+pages/migrations/__pycache__/0007_reservation_is_active_alter_reservation_date.cpython-311.pyc
+pages/migrations/__pycache__/0008_merge_20241126_1408.cpython-311.pyc
+pages/migrations/__pycache__/0009_remove_reservation_is_active_reservation_checked_in.cpython-311.pyc

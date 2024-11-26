@@ -11,44 +11,44 @@
 <body>
     <main class="main">
         <div class="container">
-            {% if messages %}
-            <div class="message">
-                {% for message in messages %}
-                    <p>{{ message }}</p>
-                {% endfor %}
-                <a href="{% url 'home' %}">Home</a>
-            </div>
-            {% endif %}
             <header>
-                <h1>Seahawk Restaurant - Remove Reservation</h1>
+                <h1><a href="{% url 'home' %}">Seahawk Restaurant</a></h1>
                 <nav>
-                <a href="{% url 'reservation_page' %}">Reservations</a>
-                <a href="{% url 'viewall_reservations' %}">All Reservations</a>
-                <form action="{% url 'logout' %}" method="POST" style="display:inline;">
-                    {% csrf_token %}
-                    <button type="submit">Log out</button>
-                </form>
-                </nav>  
+                    <a href="{% url 'reservation_page' %}">Reservations</a>
+                    <form action="{% url 'logout' %}" method="POST" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit">Log out</button>
+                    </form>
+                </nav>
             </header>
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="messages">
+                            <p>{{ message }}</p>
+                    </div>
+                {% endfor %}
+            {% endif %}
             <!-- res details -->
             <div class="reservation-details">
                 <h3>Reservation Details</h3>
-                <div class="result-item">
-                    <p class="result-item-field">Name:</p>
-                    <p class="result-item-content">{{ reservation.reservedBy.first_name }} {{ reservation.reservedBy.last_name }}</p>
+                <div class="reservation">
+                    <div class="result-item">
+                        <p class="result-item-field">Name:</p>
+                        <p class="result-item-content">{{ reservation.reservedBy.first_name }} {{ reservation.reservedBy.last_name }}</p>
+                    </div>
+                    <div class="result-item">
+                        <p class="result-item-field">Date:</p>
+                        <p class="result-item-content">{{ reservation.date }}</p>
+                    </div>
+                    <div class="result-item">
+                        <p class="result-item-field">Time:</p>
+                        <p class="result-item-content">{{ reservation.time }}</p>
+                    </div>
+                    <div class="result-item">
+                        <p class="result-item-field">Table:</p>
+                        <p class="result-item-content">{{ reservation.tablenum }}</p>
+                    </div>   
                 </div>
-                <div class="result-item">
-                    <p class="result-item-field">Date:</p>
-                    <p class="result-item-content">{{ reservation.date }}</p>
-                </div>
-                <div class="result-item">
-                    <p class="result-item-field">Time:</p>
-                    <p class="result-item-content">{{ reservation.time }}</p>
-                </div>
-                <div class="result-item">
-                    <p class="result-item-field">Table:</p>
-                    <p class="result-item-content">{{ reservation.tablenum }}</p>
-                </div>   
             </div>
             {% if not success %}
             <div class="confirmation-box">
