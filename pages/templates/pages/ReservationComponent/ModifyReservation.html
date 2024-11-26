@@ -1,0 +1,97 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seahawk Restaurant - Modify Reservation</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css'%}">
+    <link rel="stylesheet" href="{% static 'css/ModifyReservationPage.css'%}">
+</head>
+<body>
+    <main class="main">
+        <div class="container">
+            {% if messages %}
+            <div class="message">
+                {% for message in messages %}
+                    <p>{{ message }}</p>
+                {% endfor %}
+                <a href="{% url 'home' %}">Home</a>
+            </div>
+            {% endif %}
+            <header>
+                <h1>Seahawk Restaurant - Modify Reservation</h1>
+                <nav>
+                <a href="{% url 'reservation_page' %}">Reservations</a>
+                <a href="{% url 'viewall_reservations' %}">All Reservations</a>
+                <form action="{% url 'logout' %}" method="POST" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit">Log out</button>
+                </form>
+                </nav>  
+            </header>
+
+            <!-- For discussion: should we allow inline edits of info, or is having two separate sections liek this better? -->
+
+            <!-- orig res details -->
+            <div class="reservation-details">
+                <h3>Reservation Details</h3>
+                <div class="result-item">
+                    <p class="result-item-field">Name:</p>
+                    <p class="result-item-content">{{ reservation.reservedBy.first_name }} {{ reservation.reservedBy.last_name }}</p>
+                </div>
+                <div class="result-item">
+                    <p class="result-item-field">Date:</p>
+                    <p class="result-item-content">{{ reservation.date }}</p>
+                </div>
+                <div class="result-item">
+                    <p class="result-item-field">Time:</p>
+                    <p class="result-item-content">{{ reservation.time }}</p>
+                </div>
+                <div class="result-item">
+                    <p class="result-item-field">Table:</p>
+                    <p class="result-item-content">{{ reservation.tablenum }}</p>
+                </div>   
+            </div>
+            <!-- edit res -->
+            <div class="modify-reservation">
+                <h3>Modify Reservation Below (leave fields blank to keep current information): </h3>
+                <form action="{% url 'modify_reservation' reservation_id=reservation_id %}" method="POST">
+                    {% csrf_token %}
+                    <div class="result-item">
+                        <label for="new_date" class="result-item-field">New Date:</label>
+                        <input type="date" class="result-item-content" id="new_date" name="date">
+                    </div>
+                    <div class="result-item">
+                        <label for="new_time" class="result-item-field">New Time:</label>
+                        <input type="time" class="result-item-field" id="new_time" name="time">
+                    </div>
+                    <div class="result-item">
+                        <label for="new_tablenumber" class="result-item-field">New Table Number:</label>
+                        <input type="number" class="result-item-field" id="new_tablenumber" name="tablenum">
+                    </div>
+                    <div class="submit-box">
+                        <button type="submit" name="submit" value="yes">Submit Changes</button>
+                        <a href="{% url 'viewall_reservations' %}">
+                            <button type="button" name="cancel">Cancel</button>
+                        </a>
+                    </div>
+                </form>
+            </div>
+            {% if neutral %}
+            <div class="neutral-message">
+                <p>No modifications made</p>
+            </div>
+            {% elif success %}
+            <div class="success-message">
+                <p>Reservation successfully modified!</p>
+            </div>
+            {% elif failure_reason %}
+            <div class="failure-message">
+                <p>Reservation modification not possible: {{ failure_reason }}</p>
+            </div>
+            {% endif %}
+        </div>
+    </main>
+</body>
+</html>

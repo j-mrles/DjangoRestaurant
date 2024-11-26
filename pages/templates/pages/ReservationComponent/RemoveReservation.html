@@ -1,0 +1,72 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seahawk Restaurant - Remove Reservation</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css'%}">
+    <link rel="stylesheet" href="{% static 'css/RemoveReservationPage.css'%}">
+</head>
+<body>
+    <main class="main">
+        <div class="container">
+            {% if messages %}
+            <div class="message">
+                {% for message in messages %}
+                    <p>{{ message }}</p>
+                {% endfor %}
+                <a href="{% url 'home' %}">Home</a>
+            </div>
+            {% endif %}
+            <header>
+                <h1>Seahawk Restaurant - Remove Reservation</h1>
+                <nav>
+                <a href="{% url 'reservation_page' %}">Reservations</a>
+                <a href="{% url 'viewall_reservations' %}">All Reservations</a>
+                <form action="{% url 'logout' %}" method="POST" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit">Log out</button>
+                </form>
+                </nav>  
+            </header>
+            <!-- res details -->
+            <div class="reservation-details">
+                <h3>Reservation Details</h3>
+                <div class="result-item">
+                    <p class="result-item-field">Name:</p>
+                    <p class="result-item-content">{{ reservation.reservedBy.first_name }} {{ reservation.reservedBy.last_name }}</p>
+                </div>
+                <div class="result-item">
+                    <p class="result-item-field">Date:</p>
+                    <p class="result-item-content">{{ reservation.date }}</p>
+                </div>
+                <div class="result-item">
+                    <p class="result-item-field">Time:</p>
+                    <p class="result-item-content">{{ reservation.time }}</p>
+                </div>
+                <div class="result-item">
+                    <p class="result-item-field">Table:</p>
+                    <p class="result-item-content">{{ reservation.tablenum }}</p>
+                </div>   
+            </div>
+            {% if not success %}
+            <div class="confirmation-box">
+                <p>Confirm removal of this reservation?</p>
+                <form action="{% url 'remove_reservation' reservation_id=reservation.id %}" method="POST">
+                    {% csrf_token %}
+                    <button type="submit" name="confirm" value="yes">Confirm</button>
+                    <a href="{% url 'viewall_reservations' %}">
+                        <button type="button" name="cancel">Cancel</button>
+                    </a>
+                </form>
+            </div>
+            {% else %}
+            <div class="success-message">
+                <p>Reservation successfully removed!</p>
+            </div>
+            {% endif %}
+        </div>
+    </main>
+</body>
+</html>

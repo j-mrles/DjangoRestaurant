@@ -7,7 +7,7 @@ from django.contrib import messages
 from django.shortcuts import redirect
 from django.db.models import Q
 import random
-from datetime import datetime, date, time
+from datetime import datetime, date, time, timedelta
 
 def home(request):
     loggedin = 'false'
@@ -115,25 +115,28 @@ def reservation_page(request):
         # Table is available
         # If user isn't logged in, get personal details from form
         if user is None:
-            username = str(User.objects.count())
+            username = f"guest_{User.objects.count()}"
+
             firstname = request.POST.get('firstname')
             lastname = request.POST.get('lastname')
             email = request.POST.get('email')
             phonenumber = request.POST.get('phone')
             
-            try:
-                user = User.objects.create(first_name=firstname, last_name=lastname, email=email, username=username)
-                user.save()
-                resuser = ResUser.objects.create(phonenumber=phonenumber, user=user)
-                resuser.save()
-            except:
-                messages.error(request, "Error occured while saving guest data for reservation")
+        try:
+            user = User.objects.create(first_name=firstname, last_name=lastname, email=email, username=username)
+            user.save()
+            resuser = ResUser.objects.create(phonenumber=phonenumber, user=user)
+            resuser.save()
+        except:
+            messages.error(request, "Error occured while saving guest data for reservation")
+
         try:        
             reservation = Reservation.objects.create(tablenum=tablenumber, date=resdate, time=restime, reservedBy=user)
             reservation.save()
         except:
             messages.error(request, "Error occured while creating reservation")
-        return redirect('home')
+            return redirect('reservation_page')
+        return redirect('confirm_reservation', reservation_id=reservation.id)
 
     return render(request, 'pages/ReservationComponent/ReservationPage.html', {
         'firstname': firstname,
@@ -148,21 +151,128 @@ def reservation_page(request):
 def viewall_reservations(request):
     clearmessages(request)
     reservations = Reservation.objects.all()
+    context = {'reservatons': reservations}
     try:
         user = User.objects.get(username=request.session.get('username'))
         if not user.is_staff:
             messages.error(request, "User not authorized!")
-    except:
+            return render(request, 'pages/ReservationComponent/ReservationViewAll.html', {
+                'reservations': [],
+            })
+    except User.DoesNotExist:
         messages.error(request, "User not authorized!")
-    return render(request, 'pages/ReservationComponent/ReservationViewAll.html', {'reservations' : reservations})
+        return render(request, 'pages/ReservationComponent/ReservationViewAll.html', {
+            'reservations' : []
+        })
+    
+    if request.method == 'POST':
+        firstname = request.POST.get('firstname')
+        lastname = request.POST.get('lastname')
+        resdate = request.POST.get('res_date')
+        restime = request.POST.get('res_time')
+        tablenum = request.POST.get('tablenum')
 
-def modify_reservation(request):
-    return render(request, "pages/ViewReservationsPage.html")
+        if firstname:
+            reservations = reservations.filter(reservedBy__first_name__iexact=firstname)
+            context['firstname'] = firstname
+        if lastname:
+            reservations = reservations.filter(reservedBy__last_name__iexact=lastname)
+            context['lastname'] = lastname
+        if resdate:
+            reservations = reservations.filter(date=resdate)
+            context['res_date'] = resdate
+        if restime:
+            reservations = reservations.filter(time=restime)
+            context['res_time'] = restime
+        if tablenum:
+            reservations = reservations.filter(tablenum=tablenum)
+            context['tablenum'] = tablenum
 
-def confirm_reservation(request):
-    reservation = Reservation.objects.all()
-    return render(request, "pages/ReservationComponent/ReservationConfirm.html", {'reservation':reservation})
+        context['reservations'] = reservations
 
+    return render(request, 'pages/ReservationComponent/ReservationViewAll.html', context)
+
+# def modify_reservation(request):
+#     return render(request, "pages/ViewReservationsPage.html")
+
+def modify_reservation(request, reservation_id):
+    try:
+        reservation = Reservation.objects.get(id=reservation_id)
+    except Reservation.DoesNotExist:
+        return redirect('viewall_reservation')
+    
+    success = False
+    failure_reason = None
+    neutral = False
+    is_submitted = False
+
+    if request.method == 'POST':
+        is_submitted = True
+        new_date = request.POST.get('date') or reservation.date
+        new_time = request.POST.get('time') or reservation.time
+        new_tablenumber = request.POST.get('tablenum') or reservation.tablenum
+
+        if new_date == reservation.date and new_time == reservation.time and new_tablenumber == reservation.tablenum:
+            neutral = True
+        elif not tableIsAvailable(int(new_tablenumber), new_date, new_time):
+            success = False
+            failure_reason = f"Table {new_tablenumber} is already reserved at {new_date} {new_time}"
+        else:
+            reservation.date = new_date
+            reservation.time = new_time
+            reservation.tablenum = new_tablenumber
+            reservation.save()
+            success = True
+        
+        # someone can try and fix if they want; think this can be done with datetime but ugh
+        # formatted_date = reservation.date.strftime("%B %d, %Y")
+        # formatted_time = reservation.time.strftime("%I:%M %p")
+
+    return render(request, 'pages/ReservationComponent/ModifyReservation.html', {
+        'reservation': reservation,
+        'reservation_id': reservation_id,
+        'success': success if is_submitted else None,
+        'neutral': neutral if is_submitted else None,
+        'failure_reason': failure_reason if is_submitted else None,
+        # 'formatted_date': formatted_date,
+        # 'formatted_time': formatted_time
+    })
+
+def checkin_reservation(request, reservation_id):
+    # no real functionality yet
+    try:
+        reservation = Reservation.objects.get(id=reservation_id)
+    except Reservation.DoesNotExist:
+        return redirect('viewall_reservation')
+    return render(request, 'pages/ReservationComponent/CheckinReservation.html', {
+        'reservation': reservation
+    })
+
+def remove_reservation(request, reservation_id):
+    try:
+        reservation = Reservation.objects.get(id=reservation_id)
+    except Reservation.DoesNotExist:
+        return redirect('viewall_reservation')
+    
+    if request.method == 'POST' and 'confirm' in request.POST:  # confirm POST obv but also that confirm was pressed
+        reservation.delete() # feels like not enough code to actually do it but we'll see
+        return render(request, 'pages/ReservationComponent/RemoveReservation.html', {
+            'success': True  # for display stuff
+        })    
+    return render(request, 'pages/ReservationComponent/RemoveReservation.html', {
+        'reservation': reservation,
+        'success': False
+    })
+
+def confirm_reservation(request, reservation_id):
+    try:
+        reservation = Reservation.objects.get(id=reservation_id)
+    except Reservation.DoesNotExist:
+        return redirect('reservation_page')
+    return render(request, "pages/ReservationComponent/ReservationConfirm.html", {
+        'reservation':reservation})
+
+'''
 def search_reservation(request):
     # do search database stuff here :D
 
@@ -177,26 +287,21 @@ def search_reservation(request):
         # available = request.GET.get('search-by-availability','')
         # reserved_by = request.GET.get('search-by-reservedby','')  # this is a little janky
         
-        errorMessage = None
+        if first_name or last_name or date or time or tablenum:
+            reservations = Reservation.objects.all()
 
-        if tablenum and not re.match(r'^\d+$', tablenum):
-            errorMessage = "Please enter a number for your table number selection"
-        else:
-            if first_name or last_name or date or time or tablenum:
-                reservations = Reservation.objects.all()
-
-                if first_name:
-                    reservations = reservations.filter(reservedBy__first_name__iexact=first_name)
-                if last_name:
-                    reservations = reservations.filter(reservedBy__last_name__iexact=last_name)
-                if date:
-                    reservations = reservations.filter(date=date)
-                if time:
-                    reservations = reservations.filter(time=time)
-                if tablenum:
-                    reservations = reservations.filter(tablenum=tablenum)
-                # if available:
-                # if reserved_by:
+            if first_name:
+                reservations = reservations.filter(reservedBy__firstname__icontains=first_name)
+            if last_name:
+                reservations = reservations.filter(reservedBy__lastname__icontains=last_name)
+            if date:
+                reservations = reservations.filter(date=date)
+            if time:
+                reservations = reservations.filter(time=time)
+            if tablenum:
+                reservations = reservations.filter(tablenum=tablenum)
+            # if available:
+            # if reserved_by:
 
     return render(request, "pages/ReservationComponent/ReservationSearch.html", {
         'reservations':reservations,
@@ -204,10 +309,28 @@ def search_reservation(request):
         'lastname' : last_name,
         'date' : date,
         'time' : time,
-        'tablenum' : tablenum,
-        'errorMessage': errorMessage
+        'tablenum' : tablenum
     })
+'''
+def search_reservation(request):
+    email = request.GET.get('search-by-email')
+    phone = request.GET.get('search-by-phone')
+    reservations = None
 
+    if email and phone:
+        try:
+            user = User.objects.get(email=email)
+            reservations = Reservation.objects.filter(reservedBy=user, reservedBy__resuser__phonenumber=phone)
+        except User.DoesNotExist:
+            reservations = None
+    else:
+        reservations = None
+    
+    return render(request, 'pages/ReservationComponent/ReservationSearch.html', {
+        'reservations': reservations,
+        'email': email,
+        'phone': phone,
+    })
 
 def custom_logout(request):
     clearmessages(request)
@@ -240,20 +363,26 @@ def table_statuses(request):
 
 
 def tableAvailability(resdate, restime):
+    if isinstance(restime, str):
+        restime_datetime = datetime.strptime(restime, "%H:%M").time()
+    else:
+        restime_datetime = restime
+
     reservations = Reservation.objects.all()
 
-    reservations.filter(date=resdate)
+    reservations = reservations.filter(date=resdate)
 
     tables = [True] * 10
 
     for reservation in reservations:
-        if reservation.time.hour >= 22:
-            endtime = reservation.time.replace(hour=23, minute=59, second = 59)
-        else:
-            endtime = reservation.time.replace(hour=reservation.time.hour+2)
+        #print(resdate, restime, reservation.time, reservation.time.replace(hour=reservation.time.hour+2))
+        # added below: there was an error where making a reservation late would cause the time to go past...
+        #... midnight, and an error would be thrown, so now it will wrap around back to '0' (past midnight)
+        endHour = (reservation.time.hour + 2) % 24
+        endTime = reservation.time.replace(hour=endHour)
         
-        print(resdate, restime, reservation.time, endtime)
-        if reservation.time <= restime <= endtime: 
+        if reservation.time <= restime_datetime <= endTime: 
+
            tables[reservation.tablenum-1] = False
     
     print(tables)
