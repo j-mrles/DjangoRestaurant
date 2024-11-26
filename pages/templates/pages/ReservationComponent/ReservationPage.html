@@ -156,10 +156,16 @@
                     {% endif %}
                 </section>
             {% else %}
+            <div class="search-container">
                 <section class="search">
                     <h3>Already have a reservation?</h3>
                     <a href="{% url 'search_page' %}">Search</a>
                 </section>
+                <section class="search">
+                    <h3>Would you like to check in for a reservation?</h3>
+                    <a href="">Check in here</a>
+                </section>
+            </div>            
             {% endif %}
         </div>    
     </main>

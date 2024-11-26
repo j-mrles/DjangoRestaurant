@@ -300,3 +300,15 @@ form {
 .result-options a:hover {
     background-color: #a9a9a9;
 }
+
+.search-container {
+    display: flex;
+    gap: 20px; /* Adds space between the sections */
+    justify-content: space-around; /* Adjusts alignment */
+}
+
+.search {
+    border: 1px solid #ccc; /* Optional: adds a border for better visibility */
+    padding: 10px;
+    text-align: center; /* Centers text within each section */
+}
