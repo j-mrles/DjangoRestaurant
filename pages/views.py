@@ -75,6 +75,8 @@ def reservation_page(request):
     clearmessages(request)                               # Clear any messages
     
     # Authenticate user for role-specific UI elements
+    today = str(date.today())
+    tablenumber = request.GET.get('tablenumber')
     loggedin = 'false'
     role = 'user'
     reservations = None
@@ -114,6 +116,7 @@ def reservation_page(request):
         # If user isn't logged in, get personal details from form
         if user is None:
             username = f"guest_{User.objects.count()}"
+
             firstname = request.POST.get('firstname')
             lastname = request.POST.get('lastname')
             email = request.POST.get('email')
@@ -126,6 +129,7 @@ def reservation_page(request):
             resuser.save()
         except:
             messages.error(request, "Error occured while saving guest data for reservation")
+
         try:        
             reservation = Reservation.objects.create(tablenum=tablenumber, date=resdate, time=restime, reservedBy=user)
             reservation.save()
@@ -139,6 +143,8 @@ def reservation_page(request):
         'loggedin': loggedin,
         'role': role,
         'reservations': reservations,
+        'today': today,
+        'tablenumber': tablenumber
     }) 
     
 
@@ -366,7 +372,7 @@ def tableAvailability(resdate, restime):
 
     reservations = reservations.filter(date=resdate)
 
-    tables = [True] * 15
+    tables = [True] * 10
 
     for reservation in reservations:
         #print(resdate, restime, reservation.time, reservation.time.replace(hour=reservation.time.hour+2))
@@ -376,6 +382,7 @@ def tableAvailability(resdate, restime):
         endTime = reservation.time.replace(hour=endHour)
         
         if reservation.time <= restime_datetime <= endTime: 
+
            tables[reservation.tablenum-1] = False
     
     print(tables)
