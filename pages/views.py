@@ -239,11 +239,19 @@ def modify_reservation(request, reservation_id):
     })
 
 def checkin_reservation(request, reservation_id):
-    # no real functionality yet
     try:
         reservation = Reservation.objects.get(id=reservation_id)
     except Reservation.DoesNotExist:
+        messages.error(request, "Reservation does not exist.")
         return redirect('viewall_reservation')
+
+    if request.method == 'POST':
+        # Update the checked_in status to True
+        reservation.checked_in = True
+        reservation.save()
+        messages.success(request, f"Reservation for Table {reservation.tablenum} has been checked in.")
+        return redirect('viewall_reservation')
+
     return render(request, 'pages/ReservationComponent/CheckinReservation.html', {
         'reservation': reservation
     })

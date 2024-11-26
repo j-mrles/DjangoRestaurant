@@ -16,6 +16,8 @@ class Reservation(models.Model):
     date = models.DateField(default=datetime.date.today)
     time = models.TimeField(default=datetime.time(19, 0))
     reservedBy = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
+    checked_in = models.BooleanField(default=False)  # Check-in feature added
+
     # removing is_active: we should be able to determine if a reservation is available/yet to happen/conflicting dynamically with the date/time info
     # is_active = models.BooleanField(default=True)
 
