@@ -47,6 +47,14 @@
                     {% endfor %}
                 {% endif %}
                 <div class="form-body">
+                    <!-- if we need to display some error messages or something -->
+                    {% if messages %}
+                        <div class="form-body">
+                            {% for message in messages %}
+                                <div class="message {{ message.tags }}"></div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
                     <form action="{% url 'reservation_page' %}" method="POST" id="reservation">
                             {% csrf_token %}
                             {% if loggedin != "true" %}

@@ -178,21 +178,26 @@ def search_reservation(request):
         # available = request.GET.get('search-by-availability','')
         # reserved_by = request.GET.get('search-by-reservedby','')  # this is a little janky
         
-        if first_name or last_name or date or time or tablenum:
-            reservations = Reservation.objects.all()
+        errorMessage = None
 
-            if first_name:
-                reservations = reservations.filter(reservedBy__firstname__icontains=first_name)
-            if last_name:
-                reservations = reservations.filter(reservedBy__lastname__icontains=last_name)
-            if date:
-                reservations = reservations.filter(date=date)
-            if time:
-                reservations = reservations.filter(time=time)
-            if tablenum:
-                reservations = reservations.filter(tablenum=tablenum)
-            # if available:
-            # if reserved_by:
+        if tablenum and not re.match(r'^\d+$', tablenum):
+            errorMessage = "Please enter a number for your table number selection"
+        else:
+            if first_name or last_name or date or time or tablenum:
+                reservations = Reservation.objects.all()
+
+                if first_name:
+                    reservations = reservations.filter(reservedBy__first_name__iexact=first_name)
+                if last_name:
+                    reservations = reservations.filter(reservedBy__last_name__iexact=last_name)
+                if date:
+                    reservations = reservations.filter(date=date)
+                if time:
+                    reservations = reservations.filter(time=time)
+                if tablenum:
+                    reservations = reservations.filter(tablenum=tablenum)
+                # if available:
+                # if reserved_by:
 
     return render(request, "pages/ReservationComponent/ReservationSearch.html", {
         'reservations':reservations,
@@ -200,7 +205,8 @@ def search_reservation(request):
         'lastname' : last_name,
         'date' : date,
         'time' : time,
-        'tablenum' : tablenum
+        'tablenum' : tablenum,
+        'errorMessage': errorMessage
     })
 '''
 def search_reservation(request):
@@ -228,7 +234,8 @@ def custom_logout(request):
     
     logout(request)
     messages.success(request, "You have logged out successfully.")
-    return redirect('login_page')  
+    # i think we should return to the home page after logging out, because if we don't, then there's no way to get back to the homescreen and continue as a guest
+    return redirect('home')  # redirect('login_page')  
 
 def table_statuses(request):
     tables = [
