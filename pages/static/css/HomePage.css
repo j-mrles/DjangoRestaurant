@@ -32,3 +32,15 @@ img {
     max-width: 45%;
     margin: 20px;
 }
+
+.messages {
+    background-color: #ccc;
+    padding: 20px;
+    margin: 20px;
+    width: 96%;
+}
+
+.messages p {
+    text-align: center;
+    font-weight: bolder;
+}
