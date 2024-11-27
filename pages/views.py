@@ -76,11 +76,10 @@ def reservation_page(request):
     
     # Authenticate user for role-specific UI elements
     today = str(date.today())
-    tablenumber = request.GET.get('tablenumber')
-    loggedin = 'false'
-    role = 'user'
-    reservations = None
-    firstname, lastname, email, phonenumber, user = None, None, None, None, None
+    tablenumber, restime, resdate = request.GET.get('tablenumber'), request.GET.get('restime'), request.GET.get('resdate')
+    print(resdate,restime)
+    loggedin, role = 'false', 'user'
+    firstname, lastname, email, phonenumber, user, reservations = None, None, None, None, None, None
     if request.session.has_key('username'): # If user is logged in
         user = User.objects.get(username=request.session.get('username')) # Get the user object from session 'username' field
         # Fill out variables from user account
@@ -115,28 +114,25 @@ def reservation_page(request):
         # Table is available
         # If user isn't logged in, get personal details from form
         if user is None:
-            username = f"guest_{User.objects.count()}"
-
+            username = str(User.objects.count())
             firstname = request.POST.get('firstname')
             lastname = request.POST.get('lastname')
             email = request.POST.get('email')
             phonenumber = request.POST.get('phone')
             
-        try:
-            user = User.objects.create(first_name=firstname, last_name=lastname, email=email, username=username)
-            user.save()
-            resuser = ResUser.objects.create(phonenumber=phonenumber, user=user)
-            resuser.save()
-        except:
-            messages.error(request, "Error occured while saving guest data for reservation")
-
+            try:
+                user = User.objects.create(first_name=firstname, last_name=lastname, email=email, username=username)
+                user.save()
+                resuser = ResUser.objects.create(phonenumber=phonenumber, user=user)
+                resuser.save()
+            except:
+                messages.error(request, "Error occured while saving guest data for reservation")
         try:        
             reservation = Reservation.objects.create(tablenum=tablenumber, date=resdate, time=restime, reservedBy=user)
             reservation.save()
         except:
             messages.error(request, "Error occured while creating reservation")
-            return redirect('reservation_page')
-        return redirect('confirm_reservation', reservation_id=reservation.id)
+        return redirect('home')
 
     return render(request, 'pages/ReservationComponent/ReservationPage.html', {
         'firstname': firstname,
@@ -144,7 +140,9 @@ def reservation_page(request):
         'role': role,
         'reservations': reservations,
         'today': today,
-        'tablenumber': tablenumber
+        'tablenumber': tablenumber,
+        'restime': restime,
+        'resdate': resdate
     }) 
     
 
