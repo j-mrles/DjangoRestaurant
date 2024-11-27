@@ -99,7 +99,7 @@ def reservation_page(request):
     if request.method == "POST":                                                        # If trying to make a reservation
         # Get information for reservation (date, time, table number)
         resdate = date.fromisoformat(request.POST.get('resdate'))
-        restime = time.fromisoformat(request.POST.get('restime')+":00")
+        restime = time.fromisoformat(request.POST.get('restime'))
         tablenumber = int(request.POST.get('tablenumber'))
         # Check if table is available during that time
         if not tableIsAvailable(tablenumber, resdate, restime):
@@ -182,7 +182,7 @@ def viewall_reservations(request):
             reservations = reservations.filter(date=resdate)
             context['res_date'] = resdate
         if restime:
-            restime = time.fromisoformat(restime+":00")
+            restime = time.fromisoformat(restime)
             reservations = reservations.filter(time=restime)
             context['res_time'] = restime
         if tablenum:
@@ -202,6 +202,13 @@ def modify_reservation(request, reservation_id):
     except Reservation.DoesNotExist:
         return redirect('viewall_reservation')
     
+    if not request.session.has_key('username'):
+        messages.error(request, 'User not authorised!')
+        return redirect('home')
+    if not User.objects.get(username=request.session.get('username')).is_staff and reservation.reservedBy.username != request.session.get('username'):
+        messages.error(request, 'User not authorised!')
+        return redirect('home')
+    
     success = False
     failure_reason = None
     neutral = False
@@ -213,9 +220,14 @@ def modify_reservation(request, reservation_id):
         new_time = request.POST.get('time') or reservation.time
         new_tablenumber = request.POST.get('tablenum') or reservation.tablenum
 
+        if isinstance(new_date, str):
+            new_date = date.fromisoformat(new_date)
+        if isinstance(new_time, str):
+            new_time = time.fromisoformat(new_time)
+
         if new_date == reservation.date and new_time == reservation.time and new_tablenumber == reservation.tablenum:
             neutral = True
-        elif not tableIsAvailable(int(new_tablenumber), new_date, new_time):
+        elif not tableIsAvailable(int(new_tablenumber), new_date, new_time, res_id=reservation.id):
             success = False
             failure_reason = f"Table {new_tablenumber} is already reserved at {new_date} {new_time}"
         else:
@@ -264,7 +276,11 @@ def remove_reservation(request, reservation_id):
         return redirect('viewall_reservation')
     
     if request.method == 'POST' and 'confirm' in request.POST:  # confirm POST obv but also that confirm was pressed
+        if reservation.reservedBy.username.isdigit:
+            user = reservation.reservedBy
         reservation.delete() # feels like not enough code to actually do it but we'll see
+        user.resuser.delete()
+        user.delete()
         return render(request, 'pages/ReservationComponent/RemoveReservation.html', {
             'success': True  # for display stuff
         })    
@@ -401,7 +417,7 @@ def table_statuses(request):
     })
 
 
-def tableAvailability(resdate, restime):
+def tableAvailability(resdate, restime, res_id=None):
     if restime.hour == 22:
         resendtime = restime.replace(hour=23, minute=59, second=59)
     else:
@@ -411,6 +427,8 @@ def tableAvailability(resdate, restime):
     reservations = Reservation.objects.all()
 
     reservations = reservations.filter(date=resdate)
+    if isinstance(res_id, int):
+        reservations = reservations.exclude(id=res_id)
 
     tables = [True] * 15
 
@@ -422,14 +440,14 @@ def tableAvailability(resdate, restime):
             endtime = reservation.time.replace(hour=reservation.time.hour+2)
         
         #print(resdate, reservation.date, restime, reservation.time, endtime, reservation.tablenum)
-        if reservation.time < restime < endtime or reservation.time < resendtime < endtime: 
+        if reservation.time <= restime < endtime or reservation.time < resendtime <= endtime: 
            tables[reservation.tablenum-1] = False
     
     print(tables)
     return tables
 
-def tableIsAvailable(tablenum, resdate, restime):
-    return tableAvailability(resdate, restime)[tablenum-1]
+def tableIsAvailable(tablenum, resdate, restime, res_id=None):
+    return tableAvailability(resdate, restime, res_id=res_id)[tablenum-1]
 
 def clearmessages(request):
     for message in messages.get_messages(request):

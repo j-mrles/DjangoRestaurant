@@ -51,9 +51,10 @@
                 {% endif %}
                 <div class="form-body">   
                     <form action="{% url 'reservation_page' %}" method="POST" id="reservation">
+                        {% csrf_token %}
                             <!-- Form section for viewing available tables -->
                             <div class="form-group">
-                                <label for="table_statuses">Table Statuses</label>
+                                <label for="table_statuses">Table Selection</label>
                                 <a href="{% url 'table_statuses' %}">Select Table and Time Here</a>
                             </div>
                             <div class="form-group">
@@ -63,20 +64,20 @@
                             <div class="form-group">
                                 <label for="restime">Reservation Time</label>
                                 <select id="restime" name="restime" required>
-                                    <option value="None" {% if not restime %} selected="selected" {% else %} disabled {% endif %}>Select From Selection Page</option>
-                                    <option value="16:00" {% if restime == "16:00:00" %} selected="selected" {% else %} disabled {% endif %}>4:00pm</option>
-                                    <option value="16:30" {% if restime == "16:30:00" %} selected="selected" {% else %} disabled {% endif %}>4:30pm</option>
-                                    <option value="17:00" {% if restime == "17:00:00" %} selected="selected" {% else %} disabled {% endif %}>5:00pm</option>
-                                    <option value="17:30" {% if restime == "17:30:00" %} selected="selected" {% else %} disabled {% endif %}>5:30pm</option>
-                                    <option value="18:00" {% if restime == "18:00:00" %} selected="selected" {% else %} disabled {% endif %}>6:00pm</option>
-                                    <option value="18:30" {% if restime == "18:30:00" %} selected="selected" {% else %} disabled {% endif %}>6:30pm</option>
-                                    <option value="19:00" {% if restime == "19:00:00" %} selected="selected" {% else %} disabled {% endif %}>7:00pm</option>
-                                    <option value="19:30" {% if restime == "19:30:00" %} selected="selected" {% else %} disabled {% endif %}>7:30pm</option>
-                                    <option value="20:00" {% if restime == "20:00:00" %} selected="selected" {% else %} disabled {% endif %}>8:00pm</option>
-                                    <option value="20:30" {% if restime == "20:30:00" %} selected="selected" {% else %} disabled {% endif %}>8:30pm</option>
-                                    <option value="21:00" {% if restime == "21:00:00" %} selected="selected" {% else %} disabled {% endif %}>9:00pm</option>
-                                    <option value="21:30" {% if restime == "21:30:00" %} selected="selected" {% else %} disabled {% endif %}>9:30pm</option>
-                                    <option value="22:00" {% if restime == "22:00:00" %} selected="selected" {% else %} disabled {% endif %}>10:00pm</option>
+                                    <option value="None" {% if not restime %} selected {% else %} disabled {% endif %}>Select From Selection Page</option>
+                                    <option value="16:00:00" {% if restime == "16:00:00" %} selected {% else %} disabled {% endif %}>4:00pm</option>
+                                    <option value="16:30:00" {% if restime == "16:30:00" %} selected {% else %} disabled {% endif %}>4:30pm</option>
+                                    <option value="17:00:00" {% if restime == "17:00:00" %} selected {% else %} disabled {% endif %}>5:00pm</option>
+                                    <option value="17:30:00" {% if restime == "17:30:00" %} selected {% else %} disabled {% endif %}>5:30pm</option>
+                                    <option value="18:00:00" {% if restime == "18:00:00" %} selected {% else %} disabled {% endif %}>6:00pm</option>
+                                    <option value="18:30:00" {% if restime == "18:30:00" %} selected {% else %} disabled {% endif %}>6:30pm</option>
+                                    <option value="19:00:00" {% if restime == "19:00:00" %} selected {% else %} disabled {% endif %}>7:00pm</option>
+                                    <option value="19:30:00" {% if restime == "19:30:00" %} selected {% else %} disabled {% endif %}>7:30pm</option>
+                                    <option value="20:00:00" {% if restime == "20:00:00" %} selected {% else %} disabled {% endif %}>8:00pm</option>
+                                    <option value="20:30:00" {% if restime == "20:30:00" %} selected {% else %} disabled {% endif %}>8:30pm</option>
+                                    <option value="21:00:00" {% if restime == "21:00:00" %} selected {% else %} disabled {% endif %}>9:00pm</option>
+                                    <option value="21:30:00" {% if restime == "21:30:00" %} selected {% else %} disabled {% endif %}>9:30pm</option>
+                                    <option value="22:00:00" {% if restime == "22:00:00" %} selected {% else %} disabled {% endif %}>10:00pm</option>
                                 </select>
                             </div>
                             <div class="form-group">

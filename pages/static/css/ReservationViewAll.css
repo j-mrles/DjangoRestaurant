@@ -41,9 +41,10 @@
     margin-bottom: 5px;
 }
 
-.form-group input {
+.form-group input, select {
+    background-color: #fff;
     width: 100%;
-    padding: 2px;
+    padding: 3px;
     border: 1px solid #ccc;
     border-radius: 5px;
 }

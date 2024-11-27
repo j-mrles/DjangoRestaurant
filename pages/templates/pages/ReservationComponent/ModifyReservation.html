@@ -31,53 +31,6 @@
                 </nav>  
             </header>
 
-            <!-- For discussion: should we allow inline edits of info, or is having two separate sections liek this better? -->
-
-            <!-- orig res details -->
-            <div class="reservation-details">
-                <h3>Reservation Details</h3>
-                <div class="result-item">
-                    <p class="result-item-field">Name:</p>
-                    <p class="result-item-content">{{ reservation.reservedBy.first_name }} {{ reservation.reservedBy.last_name }}</p>
-                </div>
-                <div class="result-item">
-                    <p class="result-item-field">Date:</p>
-                    <p class="result-item-content">{{ reservation.date }}</p>
-                </div>
-                <div class="result-item">
-                    <p class="result-item-field">Time:</p>
-                    <p class="result-item-content">{{ reservation.time }}</p>
-                </div>
-                <div class="result-item">
-                    <p class="result-item-field">Table:</p>
-                    <p class="result-item-content">{{ reservation.tablenum }}</p>
-                </div>   
-            </div>
-            <!-- edit res -->
-            <div class="modify-reservation">
-                <h3>Modify Reservation Below (leave fields blank to keep current information): </h3>
-                <form action="{% url 'modify_reservation' reservation_id=reservation_id %}" method="POST">
-                    {% csrf_token %}
-                    <div class="result-item">
-                        <label for="new_date" class="result-item-field">New Date:</label>
-                        <input type="date" class="result-item-content" id="new_date" name="date">
-                    </div>
-                    <div class="result-item">
-                        <label for="new_time" class="result-item-field">New Time:</label>
-                        <input type="time" class="result-item-field" id="new_time" name="time">
-                    </div>
-                    <div class="result-item">
-                        <label for="new_tablenumber" class="result-item-field">New Table Number:</label>
-                        <input type="number" class="result-item-field" id="new_tablenumber" name="tablenum">
-                    </div>
-                    <div class="submit-box">
-                        <button type="submit" name="submit" value="yes">Submit Changes</button>
-                        <a href="{% url 'viewall_reservations' %}">
-                            <button type="button" name="cancel">Cancel</button>
-                        </a>
-                    </div>
-                </form>
-            </div>
             {% if neutral %}
             <div class="neutral-message">
                 <p>No modifications made</p>
@@ -91,6 +44,70 @@
                 <p>Reservation modification not possible: {{ failure_reason }}</p>
             </div>
             {% endif %}
+            <!-- For discussion: should we allow inline edits of info, or is having two separate sections liek this better? -->
+            <!-- orig res details -->
+            <div class="reservation-details">
+                <h3>Reservation Details</h3>
+                    <div class="reservation">
+                        <div class="result-item">
+                            <p class="result-item-field">Name:</p>
+                            <p class="result-item-content">{{ reservation.reservedBy.first_name }} {{ reservation.reservedBy.last_name }}</p>
+                        </div>
+                        <div class="result-item">
+                            <p class="result-item-field">Date:</p>
+                            <p class="result-item-content">{{ reservation.date }}</p>
+                        </div>
+                        <div class="result-item">
+                            <p class="result-item-field">Time:</p>
+                            <p class="result-item-content">{{ reservation.time }}</p>
+                        </div>
+                        <div class="result-item">
+                            <p class="result-item-field">Table:</p>
+                            <p class="result-item-content">{{ reservation.tablenum }}</p>
+                        </div>   
+                </div>
+            </div>
+            <!-- edit res -->
+            <div class="modify-reservation">
+                <h3>Modify Reservation Below: </h3>
+                <p>Leave fields blank to keep current information</p>
+                <form action="{% url 'modify_reservation' reservation_id=reservation_id %}" method="POST" class="reservation">
+                    {% csrf_token %}
+                    <div class="result-item">
+                        <label for="new_date" class="result-item-field">New Date:</label>
+                        <input type="date" class="result-item-content" id="new_date" name="date">
+                    </div>
+                    <div class="result-item">
+                        <label for="new_time" class="result-item-field">New Time:</label>
+                        <select id="new_time" class="result-item-content" name="time">
+                            <option value="" selected>Select New Time</option>
+                            <option value="16:00:00">4:00pm</option>
+                            <option value="16:30:00">4:30pm</option>
+                            <option value="17:00:00">5:00pm</option>
+                            <option value="17:30:00">5:30pm</option>
+                            <option value="18:00:00">6:00pm</option>
+                            <option value="18:30:00">6:30pm</option>
+                            <option value="19:00:00">7:00pm</option>
+                            <option value="19:30:00">7:30pm</option>
+                            <option value="20:00:00">8:00pm</option>
+                            <option value="20:30:00">8:30pm</option>
+                            <option value="21:00:00">9:00pm</option>
+                            <option value="21:30:00">9:30pm</option>
+                            <option value="22:00:00">10:00pm</option>
+                        </select>
+                    </div>
+                    <div class="result-item">
+                        <label for="new_tablenumber" class="result-item-field">New Table Number:</label>
+                        <input type="number" class="result-item-field" id="new_tablenumber" name="tablenum">
+                    </div>
+                    <div class="submit-box">
+                        <a href="{% url 'viewall_reservations' %}">
+                            <button type="button" name="cancel">Cancel</button>
+                        </a>
+                        <button type="submit" name="submit" value="yes">Submit Changes</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </main>
 </body>
