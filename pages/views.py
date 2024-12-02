@@ -6,7 +6,6 @@ from django.contrib.auth import logout, authenticate
 from django.contrib import messages
 from django.shortcuts import redirect
 from django.db.models import Q
-import random
 from datetime import datetime, date, time, timedelta
 
 def home(request):
@@ -73,17 +72,16 @@ def register(request):
 
 def reservation_page(request):
     clearmessages(request)                               # Clear any messages
-    
+    context = {}
+
     # Authenticate user for role-specific UI elements
-    today = str(date.today())
-    tablenumber, restime, resdate = request.GET.get('tablenumber'), request.GET.get('restime'), request.GET.get('resdate')
-    print(resdate,restime)
+    today, tablenumber, restime, resdate = str(date.today()), request.GET.get('tablenumber'), request.GET.get('restime'), request.GET.get('resdate')
     loggedin, role = 'false', 'user'
-    firstname, lastname, email, phonenumber, user, reservations = None, None, None, None, None, None
+    welcomename, firstname, lastname, email, phonenumber, user, reservations = None, None, None, None, None, None, None
     if request.session.has_key('username'): # If user is logged in
         user = User.objects.get(username=request.session.get('username')) # Get the user object from session 'username' field
         # Fill out variables from user account
-        firstname = user.first_name
+        firstname, welcomename = user.first_name, user.first_name
         lastname = user.last_name
         email = user.email
         phonenumber = user.resuser.phonenumber
@@ -93,24 +91,31 @@ def reservation_page(request):
         if user.is_staff:
             role = 'employee'
     else:
-        firstname = "Guest"
+        welcomename = "Guest"
 
+    # Update context
+    context['welcomename'], context['loggedin'], context['role'], context['reservations'], context['today'], context['tablenumber'], context['restime'], context['resdate'] = welcomename, loggedin, role, reservations, today, tablenumber, restime, resdate
 
-    if request.method == "POST":                                                        # If trying to make a reservation
+    # If trying to make a reservation
+    if request.method == "POST":                                                        
         # Get information for reservation (date, time, table number)
-        resdate = date.fromisoformat(request.POST.get('resdate'))
-        restime = time.fromisoformat(request.POST.get('restime'))
-        tablenumber = int(request.POST.get('tablenumber'))
+        resdate, restime, tablenumber = date.fromisoformat(request.POST.get('resdate')), time.fromisoformat(request.POST.get('restime')), int(request.POST.get('tablenumber'))
+
+        # Update Context
+        context['today'], context['tablenumber'], context['restime'], context['resdate'] = today, tablenumber, restime, resdate
+
+        # Check if date is more than 90 days out
+        latestdate = datetime.now() + timedelta(days=90)
+        latestdate = latestdate.date()
+        if resdate > latestdate:
+            messages.error(request, "Please select date on or before " + latestdate.strftime("%B %d, %Y"))
+            return render(request, 'pages/ReservationComponent/ReservationPage.html', context)  
         # Check if table is available during that time
         if not tableIsAvailable(tablenumber, resdate, restime):
             # Table is not available
             messages.error(request, "Table is not available!")
-            return render(request, 'pages/ReservationComponent/ReservationPage.html', {
-                'firstname': firstname,
-                'loggedin': loggedin,
-                'role': role,
-                'reservations': reservations,
-             })  
+            return render(request, 'pages/ReservationComponent/ReservationPage.html', context)  
+        
         # Table is available
         # If user isn't logged in, get personal details from form
         if user is None:
@@ -119,7 +124,6 @@ def reservation_page(request):
             lastname = request.POST.get('lastname')
             email = request.POST.get('email')
             phonenumber = request.POST.get('phone')
-            
             try:
                 user = User.objects.create(first_name=firstname, last_name=lastname, email=email, username=username)
                 user.save()
@@ -127,23 +131,17 @@ def reservation_page(request):
                 resuser.save()
             except:
                 messages.error(request, "Error occured while saving guest data for reservation")
+                return render(request, 'pages/ReservationComponent/ReservationPage.html', context) 
         try:        
             reservation = Reservation.objects.create(tablenum=tablenumber, date=resdate, time=restime, reservedBy=user)
             reservation.save()
         except:
             messages.error(request, "Error occured while creating reservation")
-        return redirect('home')
+            return render(request, 'pages/ReservationComponent/ReservationPage.html', context) 
+        
+        return redirect('confirm_reservation', reservation_id=reservation.id)
 
-    return render(request, 'pages/ReservationComponent/ReservationPage.html', {
-        'firstname': firstname,
-        'loggedin': loggedin,
-        'role': role,
-        'reservations': reservations,
-        'today': today,
-        'tablenumber': tablenumber,
-        'restime': restime,
-        'resdate': resdate
-    }) 
+    return render(request, 'pages/ReservationComponent/ReservationPage.html', context) 
     
 
 def viewall_reservations(request):
@@ -192,9 +190,6 @@ def viewall_reservations(request):
         context['reservations'] = reservations
 
     return render(request, 'pages/ReservationComponent/ReservationViewAll.html', context)
-
-# def modify_reservation(request):
-#     return render(request, "pages/ViewReservationsPage.html")
 
 def modify_reservation(request, reservation_id):
     try:
@@ -247,8 +242,8 @@ def modify_reservation(request, reservation_id):
         'success': success if is_submitted else None,
         'neutral': neutral if is_submitted else None,
         'failure_reason': failure_reason if is_submitted else None,
-        # 'formatted_date': formatted_date,
-        # 'formatted_time': formatted_time
+        #'formatted_date': formatted_date,
+        #'formatted_time': formatted_time
     })
 
 def checkin_reservation(request, reservation_id):
@@ -256,14 +251,14 @@ def checkin_reservation(request, reservation_id):
         reservation = Reservation.objects.get(id=reservation_id)
     except Reservation.DoesNotExist:
         messages.error(request, "Reservation does not exist.")
-        return redirect('viewall_reservation')
+        return redirect('viewall_reservations')
 
     if request.method == 'POST':
         # Update the checked_in status to True
         reservation.checked_in = True
         reservation.save()
         messages.success(request, f"Reservation for Table {reservation.tablenum} has been checked in.")
-        return redirect('viewall_reservation')
+        return redirect('viewall_reservations')
 
     return render(request, 'pages/ReservationComponent/CheckinReservation.html', {
         'reservation': reservation
@@ -273,7 +268,7 @@ def remove_reservation(request, reservation_id):
     try:
         reservation = Reservation.objects.get(id=reservation_id)
     except Reservation.DoesNotExist:
-        return redirect('viewall_reservation')
+        return redirect('viewall_reservations')
     
     if request.method == 'POST' and 'confirm' in request.POST:  # confirm POST obv but also that confirm was pressed
         if reservation.reservedBy.username.isdigit:
@@ -290,6 +285,10 @@ def remove_reservation(request, reservation_id):
     })
 
 def confirm_reservation(request, reservation_id):
+    if not 'HTTP_REFERER' in request.META:
+        messages.error(request,'Page not available!')
+        return redirect('home')
+    
     try:
         reservation = Reservation.objects.get(id=reservation_id)
     except Reservation.DoesNotExist:
@@ -366,6 +365,7 @@ def custom_logout(request):
     return redirect('home')  # redirect('login_page')  
 
 def table_statuses(request):
+    clearmessages(request)
 
     resdate = request.GET.get('resdate')
     restime = request.GET.get('restime')
@@ -375,6 +375,11 @@ def table_statuses(request):
         resdate = date(day=now.day, month=now.month, year=now.year)
     else:
         resdate = date.fromisoformat(resdate)
+        latestdate = now + timedelta(days=90)
+        latestdate = latestdate.date()
+        if resdate > latestdate:
+            resdate = latestdate
+            messages.error(request, "Please select date on or before " + latestdate.strftime("%B %d, %Y"))
     if restime == None:
         restime = now + (datetime.min - now) % timedelta(minutes=30)
         restime = restime.time()
@@ -384,25 +389,25 @@ def table_statuses(request):
             restime = time(hour=16)
             resdate = resdate + timedelta(days=1)
     else:
-        restime = time.fromisoformat(restime + ":00")
+        restime = time.fromisoformat(restime)
 
     availability = tableAvailability(resdate, restime)
     tables = [
         {"number": 1, "capacity": 2, "availability": 'Available' if availability[0] else 'Unavailable'},
         {"number": 2, "capacity": 2, "availability": 'Available' if availability[1] else 'Unavailable'},
-        {"number": 3, "capacity": 2, "availability": 'Available' if availability[2] else 'Unavailable'},
-        {"number": 4, "capacity": 2, "availability": 'Available' if availability[3] else 'Unavailable'},
-        {"number": 5, "capacity": 4, "availability": 'Available' if availability[4] else 'Unavailable'},
-        {"number": 6, "capacity": 4, "availability": 'Available' if availability[5] else 'Unavailable'},
+        {"number": 3, "capacity": 4, "availability": 'Available' if availability[2] else 'Unavailable'},
+        {"number": 4, "capacity": 8, "availability": 'Available' if availability[3] else 'Unavailable'},
+        {"number": 5, "capacity": 8, "availability": 'Available' if availability[4] else 'Unavailable'},
+        {"number": 6, "capacity": 2, "availability": 'Available' if availability[5] else 'Unavailable'},
         {"number": 7, "capacity": 4, "availability": 'Available' if availability[6] else 'Unavailable'},
-        {"number": 8, "capacity": 4, "availability": 'Available' if availability[7] else 'Unavailable'},
+        {"number": 8, "capacity": 6, "availability": 'Available' if availability[7] else 'Unavailable'},
         {"number": 9, "capacity": 4, "availability": 'Available' if availability[8] else 'Unavailable'},
-        {"number": 10, "capacity": 6, "availability": 'Available' if availability[9] else 'Unavailable'},
-        {"number": 11, "capacity": 6, "availability": 'Available' if availability[10] else 'Unavailable'},
+        {"number": 10, "capacity": 4, "availability": 'Available' if availability[9] else 'Unavailable'},
+        {"number": 11, "capacity": 4, "availability": 'Available' if availability[10] else 'Unavailable'},
         {"number": 12, "capacity": 6, "availability": 'Available' if availability[11] else 'Unavailable'},
-        {"number": 13, "capacity": 8, "availability": 'Available' if availability[12] else 'Unavailable'},
-        {"number": 14, "capacity": 8, "availability": 'Available' if availability[13] else 'Unavailable'},
-        {"number": 15, "capacity": 12, "availability": 'Available' if availability[14] else 'Unavailable'},
+        {"number": 13, "capacity": 6, "availability": 'Available' if availability[12] else 'Unavailable'},
+        {"number": 14, "capacity": 12, "availability": 'Available' if availability[13] else 'Unavailable'},
+        {"number": 15, "capacity": 2, "availability": 'Available' if availability[14] else 'Unavailable'},
     ]
 
     selected_table = request.GET.get('tablenumber', '')

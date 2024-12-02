@@ -62,32 +62,11 @@ form {
 .visual {
     background-color: #ccc;
     width: 45%;
-    padding: 20px;
     margin: 20px;
 }
 
-.visual table {
-    width: 100%;
-    border-collapse: collapse;
-    background-color: #d9d9d9;
-}
-
-.visual thead {
-    font-size: large;
-}
-
-.visual th {
-    height: 30px;
-    text-align: center;
-}
-
-.visual tr {
-    height: 30px;
-}
-
-.visual td {
-    text-align: center;
-    border-radius: 5px;
+.visual img {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 .button {
@@ -115,13 +94,18 @@ form {
 }
 
 .form-body {
-    display:inline-flex;
+    display: inline-flex;
     justify-content: space-between;
+}
+
+.form-body form {
+    display: flex;
+    align-content: start;
 }
 
 .form-group {
     margin-bottom: 10px;
-    width: 45%;
+    width: 48%;
 }
 
 .form-group label {
@@ -144,21 +128,6 @@ form {
     background-color: #fff;
 }
 
-.reservationform button {
-    padding: 8px;
-    background: #333;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    margin: 0px 15px 15px 15px;
-    display: block;
-}
-
-.reservationform button:hover {
-    background: #555;
-}
-
 .form-group a {
     all: unset;
     padding: 7px 0px 6px 0px;
@@ -174,6 +143,21 @@ form {
 }
 
 .form-group a:hover {
+    background: #555;
+}
+
+.reservationform button {
+    padding: 8px;
+    background: #333;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin: 0px 15px 15px 15px;
+    display: block;
+}
+
+.reservationform button:hover {
     background: #555;
 }
 

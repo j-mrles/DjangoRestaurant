@@ -91,7 +91,11 @@
                                 <div class="result-item"><p class="result-item-field">Phone:</p><p class="result-item-content">{{reservation.reservedBy.resuser.phonenumber}}</p></div>
                             </div>
                             <div class="result-options">
-                                <a href="{% url 'checkin_reservation' reservation_id=reservation.id %}">Check In</a>
+                                {% if not reservation.checked_in %}
+                                    <a href="{% url 'checkin_reservation' reservation_id=reservation.id %}">Check In</a>
+                                {% else %}
+                                    <p>Checked In</p>
+                                {% endif %}
                                 <a href="{% url 'modify_reservation' reservation_id=reservation.id %}">Modify</a>
                                 <a href="{% url 'remove_reservation' reservation_id=reservation.id %}">Remove</a>
                             </div>

@@ -30,12 +30,7 @@
             </header>
             <section class="welcomeuser">
                 <!-- Displaying of guest's first name, otherwise referring to customer as Guest -->
-                <h2>Welcome, 
-                    {% if firstname %}
-                        {{ firstname }}
-                    {% else %}
-                        Guest
-                    {% endif %}</h2>
+                <h2>Welcome, {{ welcomename }}</h2>
             </section>
             <!-- Section that contains the "body" of the form; separated into form-body which contains the form labels and inputs, 
              and then the visual to go alongside it -->
@@ -104,30 +99,9 @@
                             </div>
                             {% endif %}
                     </form>
-                    <div class="visual">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Number</th>
-                                    <th>Capacity</th>
-                                    <th>Availability</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>
-                                        <!-- Check if table number is available -->
-                                        <div class="button">
-                                            <a href="{% url 'reservation_page' %}?tablenumber=5" class="button">5</a>
-                                        </div>
-                                        <!-- If table number is reserved, do not display clickable button -->
-                                    </td>
-                                    <td>10</td>
-                                    <td>Available</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                <div class="visual">
+                    <img src="{% static 'images/table-map.jpg' %}" alt="Table Map">
+                </div>
                 </div>
                 <button type="submit" form="reservation">Reserve</button>
             </section>
@@ -160,10 +134,6 @@
                 <section class="search">
                     <h3>Already have a reservation?</h3>
                     <a href="{% url 'search_page' %}">Search</a>
-                </section>
-                <section class="search">
-                    <h3>Would you like to check in for a reservation?</h3>
-                    <a href="">Check in here</a>
                 </section>
             </div>            
             {% endif %}
