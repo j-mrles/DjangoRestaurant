@@ -358,7 +358,7 @@ def table_statuses(request):
     now = datetime.now()
 
     if resdate == None:
-        resdate = date(day=now.day, month=now.month, year=now.year)
+        resdate = now.date()
     else:
         resdate = date.fromisoformat(resdate)
         latestdate = now + timedelta(days=90)
@@ -366,6 +366,9 @@ def table_statuses(request):
         if resdate > latestdate:
             resdate = latestdate
             messages.error(request, "Please select date on or before " + latestdate.strftime("%B %d, %Y"))
+        if resdate < now.date():
+            resdate = now.date()
+            messages.error(request, "Please select date on or after " + now.date().strftime("%B %d, %Y"))
     if restime == None:
         restime = now + (datetime.min - now) % timedelta(minutes=30)
         restime = restime.time()
