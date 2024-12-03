@@ -21,12 +21,15 @@ def home(request):
         })  
 
 def login(request):
-    clearmessages(request)                              # clear any messages in request
-    if request.method == "POST":                                            # If the request is someone clicking a form button
+    # clear any messages in request
+    clearmessages(request)    
+    # If the request is someone clicking a form button
+    if request.method == "POST":                                            
         # Get the form data (For login, just username and password)
         username = request.POST.get("username")
         password = request.POST.get("password")
-        if username and password:                                           # If both fields are NOT empty
+        # If both fields are NOT empty
+        if username and password:                                           
             user = authenticate(username=username , password=password)      # Authenticate user
             if user is not None:                                            # If user is found
                 request.session['user_id'] = user.id

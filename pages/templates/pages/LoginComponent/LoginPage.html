@@ -13,6 +13,10 @@
         <div class="container">
             <header>
                 <h1><a href="{% url 'home' %}">Seahawk Restaurant</a></h1>
+                <nav>
+                    <a href="{% url 'reservation_page'%}">Reservations</a>
+                    <a href="{% url 'login_page' %}" id="currentpage">Login</a>
+                </nav>
             </header>
             <section class="login-container">
                 {% if messages %}

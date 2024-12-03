@@ -9,6 +9,7 @@ body {
     font-family: Arial, sans-serif;
     background-color: #f5f5f5;
     background-image: url('../../../static/images/meal-platters.png'); 
+    background-attachment: fixed;
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
