@@ -260,6 +260,12 @@ def checkin_reservation(request, reservation_id):
     except Reservation.DoesNotExist:
         messages.error(request, "Reservation does not exist.")
         return redirect('viewall_reservations')
+
+    # Check if user is trying to check in before today
+    if reservation.date != datetime.now().date():
+        messages.error(request, "Check in cannot be done before reservation date.")
+        return redirect('viewall_reservations')
+    
     # Check if user has clicked 'Check In' on check in confirmation page
     if request.method == 'POST':
         # Update the checked_in status to True
@@ -290,8 +296,9 @@ def remove_reservation(request, reservation_id):
         if reservation.reservedBy.username.isdigit:
             user = reservation.reservedBy
         reservation.delete() # feels like not enough code to actually do it but we'll see
-        user.resuser.delete()
-        user.delete()
+        if user.username.isdigit():
+            user.resuser.delete()
+            user.delete()
         return render(request, 'pages/ReservationComponent/RemoveReservation.html', {
             'success': True  # for display stuff
         })    
