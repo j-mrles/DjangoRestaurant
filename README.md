@@ -4,13 +4,6 @@ The Seahawk Restaurant Management System is designed to address the challenges o
 
 ## Features
 
-### Smart Inventory Module
-- **Expiration Tracking**: Monitors expiration dates of meat inventories (beef, pork, and chicken) and notifies inventory staff before items expire.
-- **Market Price Monitoring**: Tracks current market prices for high-quality meats and alerts staff when prices drop below the 5-day moving average for timely ordering.
-- **Low Stock Alerts**: Notifies staff when stock levels fall below a certain threshold.
-- **Predictive Analytics**: Predicts potential meat shortages based on historical purchase data, providing proactive notifications.
-- **Detailed Inventory Data**: Allows inventory staff to view comprehensive inventory information.
-
 ### Smart Reservation Module
 - **Seating Capacity**: Manages a seating capacity of 300, with the option to expand to 400 seats.
 - **Reservation Management**: Customers can reserve up to 200 seats in a single reservation.
