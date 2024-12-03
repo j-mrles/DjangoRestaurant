@@ -122,7 +122,8 @@
      #f0f0f0;
 }
 
-.result-options a {
+.result-options a, p {
+    text-align: center;
     margin-top: auto;
     margin-bottom: auto;
     margin-left: 20px;
@@ -136,6 +137,11 @@
 
 .result-options a:hover {
     background-color: #a9a9a9;
+}
+
+.result-options p {
+    background-color: #c3f3c3;
+    cursor: not-allowed;
 }
 
 main {

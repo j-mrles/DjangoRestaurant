@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Seahawk Restaurant - Check-in Reservations</title>
     <link rel="stylesheet" href="{% static 'css/styles.css'%}">
-    <!-- <link rel="stylesheet" href="{% static 'css/CheckinReservationPage.css'%}">-->
+    <link rel="stylesheet" href="{% static 'css/CheckinReservationPage.css'%}">
 </head>
 <body>
     <main class="main">
@@ -16,7 +16,6 @@
                 {% for message in messages %}
                     <p>{{ message }}</p>
                 {% endfor %}
-                <a href="{% url 'home' %}">Home</a>
             </div>
             {% endif %}
             <header>
@@ -30,62 +29,37 @@
                 </form>
                 </nav>  
             </header>
-            <!-- Filter Criteria Box-->
-            <div class="filter">
-                <h3>Filter Reservations</h3>
-                <form action="{% url 'viewall_reservations' %}" method="POST" id="filter">
-                    {% csrf_token %}
-                    <div class="form-group">
-                        <label for="firstname"> First name: </label>
-                        <input type="text" name="firstname" id="firstname">
+            <!-- res details -->
+            <div class="reservation-details">
+                <h3>Reservation Details</h3>
+                <div class="reservation">
+                    <div class="result-item">
+                        <p class="result-item-field">Name:</p>
+                        <p class="result-item-content">{{ reservation.reservedBy.first_name }} {{ reservation.reservedBy.last_name }}</p>
                     </div>
-                    <div class="form-group">
-                        <label for="lastname"> Last name: </label>
-                        <input type="text" name="lastname" id="lastname">
+                    <div class="result-item">
+                        <p class="result-item-field">Date:</p>
+                        <p class="result-item-content">{{ reservation.date }}</p>
                     </div>
-                    <div class="form-group">
-                        <label for="res_date"> Date: </label>
-                        <input type="date" name="res_date" id="res_date">
+                    <div class="result-item">
+                        <p class="result-item-field">Time:</p>
+                        <p class="result-item-content">{{ reservation.time }}</p>
                     </div>
-                    <div class="form-group">
-                        <label for="res_time"> Time: </label>
-                        <input type="time" name="res_time" id="res_time">
-                    </div>
-                    <div class="form-group">
-                        <label for="tablenum"> Table Number: </label>
-                        <input type="number" name="tablenum" id="tablenum">
-                    </div>
-                    <input type="submit" id="submit" for="filter" value="Filter">
-                </form>
+                    <div class="result-item">
+                        <p class="result-item-field">Table:</p>
+                        <p class="result-item-content">{{ reservation.tablenum }}</p>
+                    </div>   
+                </div>
             </div>
-            <!-- Results box -->
-            <div class="results">
-                <h3>Results</h3>
-                {% if reservations %}
-                    {% for reservation in reservations %}
-                        <div class="result-group">
-                            <p class="result-number">{{ forloop.counter }}</p>
-                            <div class="result-text">
-                                <div class="result-item"><p class="result-item-field">Name:</p><p class="result-item-content">{{reservation.reservedBy.first_name}} {{reservation.reservedBy.last_name}}</p></div>
-                                <div class="result-item"><p class="result-item-field">Date:</p><p class="result-item-content">{{reservation.date}}</p></div>
-                                <div class="result-item"><p class="result-item-field">Time:</p><p class="result-item-content">{{reservation.time}}</p></div>
-                                <div class="result-item"><p class="result-item-field">Table:</p><p class="result-item-content">{{reservation.tablenum}}</p></div>
-                            </div>
-                            <div class="result-options">
-                                <a href="{% url 'checkin_reservation' reservation_id=reservation.id %}">Check In</a>
-                                <a href="{% url 'modify_reservation' reservation_id=reservation.id %}">Modify</a>
-                                <a href="{% url 'remove_reservation' reservation_id=reservation.id %}">Remove</a>
-                            </div>
-                        </div>
-                    {% endfor %}
-                {% else %}
-                    <div class="noresults">
-                        <p>No reservations were found 
-                            {% if firstname or lastname or res_date or res_time or tablenum %} 
-                            with criteria " {{ firstname }} {{ lastname }} {{ res_date }} {{ res_time }} {{ tablenum }} " 
-                            {% endif %}</p>
-                    </div>
-                {% endif %}
+            <div class="confirmation-box">
+                <p>Confirm check in of this reservation?</p>
+                <form action="{% url 'checkin_reservation' reservation_id=reservation.id %}" method="POST">
+                    {% csrf_token %}
+                    <button type="submit" name="confirm" value="yes">Check In</button>
+                    <a href="{% url 'viewall_reservations' %}">
+                        <button type="button" name="cancel">Cancel</button>
+                    </a>
+                </form>
             </div>
         </div>
     </main>

@@ -247,24 +247,40 @@ def modify_reservation(request, reservation_id):
     })
 
 def checkin_reservation(request, reservation_id):
+    # Validate user
+    if not request.session.has_key('username'):
+        messages.error(request, 'User not authorised!')
+        return redirect('home')
+    if not User.objects.get(username=request.session.get('username')).is_staff and reservation.reservedBy.username != request.session.get('username'):
+        messages.error(request, 'User not authorised!')
+        return redirect('home')
+    # Validate reservation id
     try:
         reservation = Reservation.objects.get(id=reservation_id)
     except Reservation.DoesNotExist:
         messages.error(request, "Reservation does not exist.")
         return redirect('viewall_reservations')
-
+    # Check if user has clicked 'Check In' on check in confirmation page
     if request.method == 'POST':
         # Update the checked_in status to True
         reservation.checked_in = True
         reservation.save()
         messages.success(request, f"Reservation for Table {reservation.tablenum} has been checked in.")
         return redirect('viewall_reservations')
-
+    # If user hasn't clicked 'Check In' on the confirmation page, they need to be sent to confirmation page
     return render(request, 'pages/ReservationComponent/CheckinReservation.html', {
         'reservation': reservation
     })
 
 def remove_reservation(request, reservation_id):
+    # Validate user
+    if not request.session.has_key('username'):
+        messages.error(request, 'User not authorised!')
+        return redirect('home')
+    if not User.objects.get(username=request.session.get('username')).is_staff and reservation.reservedBy.username != request.session.get('username'):
+        messages.error(request, 'User not authorised!')
+        return redirect('home')
+    
     try:
         reservation = Reservation.objects.get(id=reservation_id)
     except Reservation.DoesNotExist:
@@ -285,57 +301,20 @@ def remove_reservation(request, reservation_id):
     })
 
 def confirm_reservation(request, reservation_id):
+    # Check if user was not redirected to this page (check if they typed in address themselves)
     if not 'HTTP_REFERER' in request.META:
         messages.error(request,'Page not available!')
         return redirect('home')
     
+
     try:
         reservation = Reservation.objects.get(id=reservation_id)
     except Reservation.DoesNotExist:
+        messages.error(request, 'Reservation does not exist!')
         return redirect('reservation_page')
     return render(request, "pages/ReservationComponent/ReservationConfirm.html", {
         'reservation':reservation})
 
-'''
-def search_reservation(request):
-    # do search database stuff here :D
-
-    reservations = []
-
-    if request.method == "GET":
-        first_name = request.GET.get('search-by-firstname','')
-        last_name = request.GET.get('search-by-lastname','')
-        date = request.GET.get('search-by-resdate','')
-        time = request.GET.get('search-by-restime','')
-        tablenum = request.GET.get('search-by-tablenum','')
-        # available = request.GET.get('search-by-availability','')
-        # reserved_by = request.GET.get('search-by-reservedby','')  # this is a little janky
-        
-        if first_name or last_name or date or time or tablenum:
-            reservations = Reservation.objects.all()
-
-            if first_name:
-                reservations = reservations.filter(reservedBy__firstname__icontains=first_name)
-            if last_name:
-                reservations = reservations.filter(reservedBy__lastname__icontains=last_name)
-            if date:
-                reservations = reservations.filter(date=date)
-            if time:
-                reservations = reservations.filter(time=time)
-            if tablenum:
-                reservations = reservations.filter(tablenum=tablenum)
-            # if available:
-            # if reserved_by:
-
-    return render(request, "pages/ReservationComponent/ReservationSearch.html", {
-        'reservations':reservations,
-        'firstname': first_name,
-        'lastname' : last_name,
-        'date' : date,
-        'time' : time,
-        'tablenum' : tablenum
-    })
-'''
 def search_reservation(request):
     email = request.GET.get('search-by-email')
     phone = request.GET.get('search-by-phone')
