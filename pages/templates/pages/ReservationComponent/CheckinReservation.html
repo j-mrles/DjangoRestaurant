@@ -30,63 +30,41 @@
                 </form>
                 </nav>  
             </header>
-            <!-- Filter Criteria Box-->
-            <div class="filter">
-                <h3>Filter Reservations</h3>
-                <form action="{% url 'viewall_reservations' %}" method="POST" id="filter">
-                    {% csrf_token %}
-                    <div class="form-group">
-                        <label for="firstname"> First name: </label>
-                        <input type="text" name="firstname" id="firstname">
-                    </div>
-                    <div class="form-group">
-                        <label for="lastname"> Last name: </label>
-                        <input type="text" name="lastname" id="lastname">
-                    </div>
-                    <div class="form-group">
-                        <label for="res_date"> Date: </label>
-                        <input type="date" name="res_date" id="res_date">
-                    </div>
-                    <div class="form-group">
-                        <label for="res_time"> Time: </label>
-                        <input type="time" name="res_time" id="res_time">
-                    </div>
-                    <div class="form-group">
-                        <label for="tablenum"> Table Number: </label>
-                        <input type="number" name="tablenum" id="tablenum">
-                    </div>
-                    <input type="submit" id="submit" for="filter" value="Filter">
-                </form>
+
+            {% block content %}
+            <div class="conxstainer">
+            <h2>Check-in Reservation</h2>
+
+            <div class="reservation-details">
+                <p><strong>Reservation ID:</strong> {{ reservation.id }}</p>
+                <p><strong>Customer Name:</strong> {{ reservation.customer_name }}</p>
+                <p><strong>Table Number:</strong> {{ reservation.tablenum }}</p>
+                <p><strong>Reservation Time:</strong> {{ reservation.reservation_time }}</p>
+                <p><strong>Checked In:</strong> {% if reservation.checked_in %} Yes {% else %} No {% endif %}</p>
             </div>
-            <!-- Results box -->
-            <div class="results">
-                <h3>Results</h3>
-                {% if reservations %}
-                    {% for reservation in reservations %}
-                        <div class="result-group">
-                            <p class="result-number">{{ forloop.counter }}</p>
-                            <div class="result-text">
-                                <div class="result-item"><p class="result-item-field">Name:</p><p class="result-item-content">{{reservation.reservedBy.first_name}} {{reservation.reservedBy.last_name}}</p></div>
-                                <div class="result-item"><p class="result-item-field">Date:</p><p class="result-item-content">{{reservation.date}}</p></div>
-                                <div class="result-item"><p class="result-item-field">Time:</p><p class="result-item-content">{{reservation.time}}</p></div>
-                                <div class="result-item"><p class="result-item-field">Table:</p><p class="result-item-content">{{reservation.tablenum}}</p></div>
-                            </div>
-                            <div class="result-options">
-                                <a href="{% url 'checkin_reservation' reservation_id=reservation.id %}">Check In</a>
-                                <a href="{% url 'modify_reservation' reservation_id=reservation.id %}">Modify</a>
-                                <a href="{% url 'remove_reservation' reservation_id=reservation.id %}">Remove</a>
-                            </div>
-                        </div>
-                    {% endfor %}
-                {% else %}
-                    <div class="noresults">
-                        <p>No reservations were found 
-                            {% if firstname or lastname or res_date or res_time or tablenum %} 
-                            with criteria " {{ firstname }} {{ lastname }} {{ res_date }} {{ res_time }} {{ tablenum }} " 
-                            {% endif %}</p>
+
+            {% if messages %}
+                <div class="messages">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
                     </div>
-                {% endif %}
+                {% endfor %}
+                </div>
+            {% endif %}
+
+            <form method="POST">
+                {% csrf_token %}
+                <div class="form-group">
+                <button type="submit" class="btn btn-success" {% if reservation.checked_in %} disabled {% endif %}>
+                    {% if reservation.checked_in %} Already Checked In {% else %} Check-in {% endif %}
+                </button>
+                </div>
+            </form>
+
+            <a href="{% url 'viewall_reservations' %}" class="btn btn-primary mt-3">Back to Reservations</a>
             </div>
+            {% endblock %}
         </div>
     </main>
 </body>
