@@ -58,9 +58,16 @@
                             <option value="22:00:00" {% if time == "22:00:00" %} selected="selected" {% endif %}>10:00pm</option>
                         </select>
                     </div>
-                    <div class="form-group">
-                        <button type="submit" value="submit" for="datetime">Check</button>
-                    </div>
+                    {% if modifying %}
+                        <div class="form-group">
+                            <input type="hidden" name="reservation_id" value="{{ reservation_id }}">
+                            <button type="submit" name="modifying" value="True" for="datetime">Check</button>
+                        </div>
+                    {% else %}
+                        <div class="form-group">
+                            <button type="submit" value="submit" for="datetime">Check</button>
+                        </div>
+                    {% endif %}
                 </form>
                 <!--Search Results-->
                 <table>
@@ -78,7 +85,11 @@
                                 <!-- Check if table number is available -->
                                 {% if table.availability == "Available" %}
                                     <div class="button">
-                                        <a href="{% url 'reservation_page' %}?tablenumber={{ table.number }}&restime={{ urltime }}&resdate={{ date }}" class="button">{{ table.number }}</a>
+                                        {% if modifying %}
+                                            <a href="{% url 'modify_reservation' reservation_id=reservation_id %}?tablenumber={{ table.number }}&restime={{ urltime }}&resdate={{ date }}&modifying=True" class="button">{{ table.number }}</a>
+                                        {% else %}
+                                            <a href="{% url 'reservation_page' %}?tablenumber={{ table.number }}&restime={{ urltime }}&resdate={{ date }}" class="button">{{ table.number }}</a>
+                                        {% endif %}
                                     </div>
                                 <!-- If table number is reserved, do not display clickable button -->
                                 {% else %}

@@ -70,40 +70,53 @@
             <!-- edit res -->
             <div class="modify-reservation">
                 <h3>Modify Reservation Below: </h3>
-                <p>Leave fields blank to keep current information</p>
+                <p>Using the Selection button, update your reservation</p>
                 <form action="{% url 'modify_reservation' reservation_id=reservation_id %}" method="POST" class="reservation">
                     {% csrf_token %}
                     <div class="result-item">
-                        <label for="new_date" class="result-item-field">New Date:</label>
-                        <input type="date" class="result-item-content" id="new_date" name="date">
+                        <label for="table_statuses">Table Selection</label>
+                        <a href="{% url 'table_statuses' %}?modifying=True&reservation_id={{ reservation.id }}&date={{ date }}&time={{ time }}&selected_table={{ selected_table }}">Select Table and Time Here</a>
                     </div>
                     <div class="result-item">
-                        <label for="new_time" class="result-item-field">New Time:</label>
-                        <select id="new_time" class="result-item-content" name="time">
-                            <option value="" selected>Select New Time</option>
-                            <option value="16:00:00">4:00pm</option>
-                            <option value="16:30:00">4:30pm</option>
-                            <option value="17:00:00">5:00pm</option>
-                            <option value="17:30:00">5:30pm</option>
-                            <option value="18:00:00">6:00pm</option>
-                            <option value="18:30:00">6:30pm</option>
-                            <option value="19:00:00">7:00pm</option>
-                            <option value="19:30:00">7:30pm</option>
-                            <option value="20:00:00">8:00pm</option>
-                            <option value="20:30:00">8:30pm</option>
-                            <option value="21:00:00">9:00pm</option>
-                            <option value="21:30:00">9:30pm</option>
-                            <option value="22:00:00">10:00pm</option>
+                        <label for="modified_date">Reservation Date</label>
+                        <input type="date" id="modified_date" name="modified_date" {% if modified_date %} value="{{ modified_date }}" {% endif %} readonly required> 
+                    </div>
+                    <div class="result-item">
+                        <!-- orig restime -->
+                        <label for="modified_time">Reservation Time</label>
+                        <select id="modified_time" name="modified_time" required>
+                            <option value="None" {% if not modified_time %} selected {% else %} disabled {% endif %}>Select From Selection Page</option>
+                            <option value="16:00:00" {% if modified_time == "16:00:00" %} selected {% else %} disabled {% endif %}>4:00pm</option>
+                            <option value="16:30:00" {% if modified_time == "16:30:00" %} selected {% else %} disabled {% endif %}>4:30pm</option>
+                            <option value="17:00:00" {% if modified_time == "17:00:00" %} selected {% else %} disabled {% endif %}>5:00pm</option>
+                            <option value="17:30:00" {% if modified_time == "17:30:00" %} selected {% else %} disabled {% endif %}>5:30pm</option>
+                            <option value="18:00:00" {% if modified_time == "18:00:00" %} selected {% else %} disabled {% endif %}>6:00pm</option>
+                            <option value="18:30:00" {% if modified_time == "18:30:00" %} selected {% else %} disabled {% endif %}>6:30pm</option>
+                            <option value="19:00:00" {% if modified_time == "19:00:00" %} selected {% else %} disabled {% endif %}>7:00pm</option>
+                            <option value="19:30:00" {% if modified_time == "19:30:00" %} selected {% else %} disabled {% endif %}>7:30pm</option>
+                            <option value="20:00:00" {% if modified_time == "20:00:00" %} selected {% else %} disabled {% endif %}>8:00pm</option>
+                            <option value="20:30:00" {% if modified_time == "20:30:00" %} selected {% else %} disabled {% endif %}>8:30pm</option>
+                            <option value="21:00:00" {% if modified_time == "21:00:00" %} selected {% else %} disabled {% endif %}>9:00pm</option>
+                            <option value="21:30:00" {% if modified_time == "21:30:00" %} selected {% else %} disabled {% endif %}>9:30pm</option>
+                            <option value="22:00:00" {% if modified_time == "22:00:00" %} selected {% else %} disabled {% endif %}>10:00pm</option>
                         </select>
                     </div>
                     <div class="result-item">
-                        <label for="new_tablenumber" class="result-item-field">New Table Number:</label>
-                        <input type="number" class="result-item-field" id="new_tablenumber" name="tablenum">
+                        <label for="modified_tablenum">Table Number</label>
+                        <!-- Added value to pre-fill form, made read only -->
+                        <input type="text" id="modified_tablenum" name="modified_tablenum" min="1" max="10" placeholder="Select From Selection Page" {% if modified_tablenum %} value="{{ modified_tablenum }}" {% endif %} readonly> 
                     </div>
                     <div class="submit-box">
-                        <a href="{% url 'viewall_reservations' %}">
-                            <button type="button" name="cancel">Cancel</button>
-                        </a>
+                        <!-- make url change here below -> user should return to where they came from before modify, not viewall; may need larger change (url in modify currently reads viewall/modify)-->
+                        {% if user.is_staff %}
+                            <a href="{% url 'viewall_reservations' %}">
+                                <button type="button" name="cancel">Cancel</button>
+                            </a>
+                        {% else %}
+                            <a href="{% url 'reservation_page' %}">
+                                <button type="button" name="cancel">Cancel</button>
+                            </a>
+                        {% endif %}
                         <button type="submit" name="submit" value="yes">Submit Changes</button>
                     </div>
                 </form>
