@@ -56,9 +56,15 @@
                 <form action="{% url 'remove_reservation' reservation_id=reservation.id %}" method="POST">
                     {% csrf_token %}
                     <button type="submit" name="confirm" value="yes">Confirm</button>
-                    <a href="{% url 'viewall_reservations' %}">
-                        <button type="button" name="cancel">Cancel</button>
-                    </a>
+                    {% if user.is_staff %}
+                        <a href="{% url 'viewall_reservations' %}">
+                            <button type="button" name="cancel">Cancel</button>
+                        </a>
+                    {% else %}
+                        <a href="{% url 'reservation_page' %}">
+                            <button type="button" name="cancel">Cancel</button>
+                        </a>
+                    {% endif %}
                 </form>
             </div>
             {% else %}

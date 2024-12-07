@@ -100,9 +100,19 @@ def reservation_page(request):
     context['welcomename'], context['loggedin'], context['role'], context['reservations'], context['today'], context['tablenumber'], context['restime'], context['resdate'] = welcomename, loggedin, role, reservations, today, tablenumber, restime, resdate
 
     # If trying to make a reservation
-    if request.method == "POST":                                                        
+    if request.method == "POST":
+
+        # added: need to check validity of fields entered (can't be left blank)
+        resdate = request.POST.get('resdate')
+        restime = request.POST.get('restime')
+        tablenumber = request.POST.get('tablenumber')
+
+        if not resdate or not restime or not tablenumber:
+            messages.error(request, "Please select a table before selecting reserve")
+            return redirect('reservation_page')
+
         # Get information for reservation (date, time, table number)
-        resdate, restime, tablenumber = date.fromisoformat(request.POST.get('resdate')), time.fromisoformat(request.POST.get('restime')), int(request.POST.get('tablenumber'))
+        resdate, restime, tablenumber = date.fromisoformat(resdate), time.fromisoformat(restime), int(tablenumber)
 
         # Update Context
         context['today'], context['tablenumber'], context['restime'], context['resdate'] = today, tablenumber, restime, resdate
@@ -195,6 +205,7 @@ def viewall_reservations(request):
     return render(request, 'pages/ReservationComponent/ReservationViewAll.html', context)
 
 def modify_reservation(request, reservation_id):
+    print("reservation_id received in view:", reservation_id)
     try:
         reservation = Reservation.objects.get(id=reservation_id)
     except Reservation.DoesNotExist:
@@ -211,12 +222,30 @@ def modify_reservation(request, reservation_id):
     failure_reason = None
     neutral = False
     is_submitted = False
+    modifying = True
 
+    # for after user goes to table selection
+    modified_date = request.GET.get('resdate')
+    modified_time = request.GET.get('restime')
+    modified_tablenum = request.GET.get('tablenumber')
+    print("tablenumber: ", modified_tablenum, " / mod date: ", modified_date, "/ ", modified_time)
+
+    # for when user presses submit changes
     if request.method == 'POST':
+
+        modified_date = request.POST.get('modified_date')
+        modified_time = request.POST.get('modified_time')
+        modified_tablenum = request.POST.get('modified_tablenum')
+        
+        if not modified_date or not modified_time or not modified_tablenum:
+            messages.error(request, "Please select a table before selecting reserve")
+            return redirect('reservation_page')
+
         is_submitted = True
-        new_date = request.POST.get('date') or reservation.date
-        new_time = request.POST.get('time') or reservation.time
-        new_tablenumber = request.POST.get('tablenum') or reservation.tablenum
+        new_date = modified_date #  #or reservation.date # request.POST.get('date') 
+        new_time = modified_time #or reservation.time #request.POST.get('time')  
+        new_tablenumber = modified_tablenum #or reservation.tablenum # request.POST.get('tablenum')
+        print("date: ", new_date, "/ time: ", new_time, "/ tablenum: ", new_tablenumber)
 
         if isinstance(new_date, str):
             new_date = date.fromisoformat(new_date)
@@ -234,10 +263,6 @@ def modify_reservation(request, reservation_id):
             reservation.tablenum = new_tablenumber
             reservation.save()
             success = True
-        
-        # someone can try and fix if they want; think this can be done with datetime but ugh
-        # formatted_date = reservation.date.strftime("%B %d, %Y")
-        # formatted_time = reservation.time.strftime("%I:%M %p")
 
     return render(request, 'pages/ReservationComponent/ModifyReservation.html', {
         'reservation': reservation,
@@ -245,6 +270,10 @@ def modify_reservation(request, reservation_id):
         'success': success if is_submitted else None,
         'neutral': neutral if is_submitted else None,
         'failure_reason': failure_reason if is_submitted else None,
+        'modifying': request.session.get('modifying', False),
+        'modified_time': modified_time,
+        'modified_date': modified_date,
+        'modified_tablenum': modified_tablenum
         #'formatted_date': formatted_date,
         #'formatted_time': formatted_time
     })
@@ -286,14 +315,15 @@ def remove_reservation(request, reservation_id):
     if not request.session.has_key('username'):
         messages.error(request, 'User not authorised!')
         return redirect('home')
-    if not User.objects.get(username=request.session.get('username')).is_staff and reservation.reservedBy.username != request.session.get('username'):
-        messages.error(request, 'User not authorised!')
-        return redirect('home')
     
     try:
         reservation = Reservation.objects.get(id=reservation_id)
     except Reservation.DoesNotExist:
         return redirect('viewall_reservations')
+
+    if not User.objects.get(username=request.session.get('username')).is_staff and reservation.reservedBy.username != request.session.get('username'):
+        messages.error(request, 'User not authorised!')
+        return redirect('home')
     
     if request.method == 'POST' and 'confirm' in request.POST:  # confirm POST obv but also that confirm was pressed
         if reservation.reservedBy.username.isdigit:
@@ -356,12 +386,32 @@ def custom_logout(request):
 def table_statuses(request):
     clearmessages(request)
 
+    modifying = request.GET.get('modifying') # == 'True'
+    print("Modify value recieved from get: ", modifying)
+    reservation_id = None
+
+    if modifying:
+        print("we're modifying")
+        reservation_id = request.GET.get('reservation_id')
+        if not reservation_id:
+            messages.error(request, "Reservation ID wasn't passed")
+            return redirect('reservation_page')
+        try:
+            original_reservation = Reservation.objects.get(id=reservation_id)
+        except Reservation.DoesNotExist:
+            messages.error(request, "Reservation to be modified was not found")
+            return redirect('reservation_page')
+            
+
     resdate = request.GET.get('resdate')
     restime = request.GET.get('restime')
     now = datetime.now()
 
     if resdate == None:
-        resdate = now.date()
+      if modifying and original_reservation:
+            resdate = original_reservation.date
+        else:
+            resdate = date(day=now.day, month=now.month, year=now.year)
     else:
         resdate = date.fromisoformat(resdate)
         latestdate = now + timedelta(days=90)
@@ -373,13 +423,16 @@ def table_statuses(request):
             resdate = now.date()
             messages.error(request, "Please select date on or after " + now.date().strftime("%B %d, %Y"))
     if restime == None:
-        restime = now + (datetime.min - now) % timedelta(minutes=30)
-        restime = restime.time()
-        if restime < time(hour=16):
-            restime = time(hour=16)
-        if restime > time(hour=22):
-            restime = time(hour=16)
-            resdate = resdate + timedelta(days=1)
+        if modifying and original_reservation:  # add a modifying flag somehow to pass so that we can tell if we're modifying or making a res
+            restime = original_reservation.time
+        else:
+            restime = now + (datetime.min - now) % timedelta(minutes=30)
+            restime = restime.time()
+            if restime < time(hour=16):
+                restime = time(hour=16)
+            if restime > time(hour=22):
+                restime = time(hour=16)
+                resdate = resdate + timedelta(days=1)
     else:
         restime = time.fromisoformat(restime)
 
@@ -403,6 +456,8 @@ def table_statuses(request):
     ]
 
     selected_table = request.GET.get('tablenumber', '')
+    print("tablenumber: ", str(selected_table))
+    print("date: ", str(resdate))
 
     return render(request, 'pages/ReservationComponent/TableStatuses.html', {
         'time': str(restime),
@@ -410,7 +465,9 @@ def table_statuses(request):
         'date': str(resdate),
         "tables": tables,
         # pass selected table to the template
-        "selected_table": selected_table,  
+        "selected_table": selected_table,
+        "modifying": modifying,
+        "reservation_id": reservation_id  
     })
 
 
