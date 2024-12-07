@@ -408,7 +408,7 @@ def table_statuses(request):
     now = datetime.now()
 
     if resdate == None:
-      if modifying and original_reservation:
+        if modifying and original_reservation:
             resdate = original_reservation.date
         else:
             resdate = date(day=now.day, month=now.month, year=now.year)
