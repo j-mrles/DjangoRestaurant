@@ -126,6 +126,20 @@
      #f0f0f0;
 }
 
+/* css not being applied to p element, so i'm trying this :/ */
+.result-options a {
+    text-align: center;
+    margin-top: auto;
+    margin-bottom: auto;
+    margin-left: 20px;
+    padding: 5px 10px;
+    background-color: #d3d3d3;
+    color: #000;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
 .result-options a p {
     text-align: center;
     margin-top: auto;
