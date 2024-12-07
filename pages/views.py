@@ -226,19 +226,6 @@ def modify_reservation(request, reservation_id):
     modified_time = request.GET.get('restime')
     modified_tablenum = request.GET.get('tablenumber')
     print("tablenumber: ", modified_tablenum, " / mod date: ", modified_date, "/ ", modified_time)
-    
-
-    # try:
-    #     if modified_date:
-    #         modified_date = date.fromisocalendar(modified_date)
-    #     if modified_time:
-    #         modified_time = time.fromisoformat(modified_time)
-    #     if modified_tablenum:
-    #         modified_tablenum = int(modified_tablenum)
-    # except ValueError:
-    #     modified_date = None
-    #     modified_time = None
-    #     modified_tablenum = None
 
     # for when user presses submit changes
     if request.method == 'POST':
@@ -273,10 +260,6 @@ def modify_reservation(request, reservation_id):
             reservation.tablenum = new_tablenumber
             reservation.save()
             success = True
-        
-        # someone can try and fix if they want; think this can be done with datetime but ugh
-        # formatted_date = reservation.date.strftime("%B %d, %Y")
-        # formatted_time = reservation.time.strftime("%I:%M %p")
 
     return render(request, 'pages/ReservationComponent/ModifyReservation.html', {
         'reservation': reservation,
