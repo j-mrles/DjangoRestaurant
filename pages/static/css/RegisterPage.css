@@ -29,6 +29,10 @@
     border-radius: 4px;
 }
 
+.form-group input:valid {
+    background-color: #9F9;
+}
+
 button {
     padding: 10px 15px;
     background: #333;

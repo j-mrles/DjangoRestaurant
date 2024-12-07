@@ -21,12 +21,15 @@ def home(request):
         })  
 
 def login(request):
-    clearmessages(request)                              # clear any messages in request
-    if request.method == "POST":                                            # If the request is someone clicking a form button
+    # clear any messages in request
+    clearmessages(request)    
+    # If the request is someone clicking a form button
+    if request.method == "POST":                                            
         # Get the form data (For login, just username and password)
         username = request.POST.get("username")
         password = request.POST.get("password")
-        if username and password:                                           # If both fields are NOT empty
+        # If both fields are NOT empty
+        if username and password:                                           
             user = authenticate(username=username , password=password)      # Authenticate user
             if user is not None:                                            # If user is found
                 request.session['user_id'] = user.id
@@ -405,7 +408,7 @@ def table_statuses(request):
     now = datetime.now()
 
     if resdate == None:
-        if modifying and original_reservation:
+      if modifying and original_reservation:
             resdate = original_reservation.date
         else:
             resdate = date(day=now.day, month=now.month, year=now.year)
@@ -416,6 +419,9 @@ def table_statuses(request):
         if resdate > latestdate:
             resdate = latestdate
             messages.error(request, "Please select date on or before " + latestdate.strftime("%B %d, %Y"))
+        if resdate < now.date():
+            resdate = now.date()
+            messages.error(request, "Please select date on or after " + now.date().strftime("%B %d, %Y"))
     if restime == None:
         if modifying and original_reservation:  # add a modifying flag somehow to pass so that we can tell if we're modifying or making a res
             restime = original_reservation.time

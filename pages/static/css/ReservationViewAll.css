@@ -41,7 +41,7 @@
     margin-bottom: 5px;
 }
 
-.form-group input, select {
+.form-group input, .form-group select {
     background-color: #fff;
     width: 100%;
     padding: 3px;
@@ -88,7 +88,7 @@
     display: inline-flex;
     flex-direction: column;
     padding: 10px;
-    padding-right: 75px;
+    padding-right: 25px;
 }
 
 .result-item {
@@ -100,7 +100,11 @@
 }
 
 .result-item-field {
-    width: 60px;
+    width: 30%;
+}
+
+.result-item-field p {
+    text-align: right;
 }
 
 .result-item-content {
@@ -122,7 +126,7 @@
      #f0f0f0;
 }
 
-.result-options a, p {
+.result-options a p {
     text-align: center;
     margin-top: auto;
     margin-bottom: auto;

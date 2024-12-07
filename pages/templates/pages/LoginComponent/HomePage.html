@@ -17,6 +17,9 @@
                 <nav>
                     <a href="{% url 'reservation_page' %}">Reservations</a>
                     {% if loggedin == "true" %}
+                        {% if role == "employee" %}
+                            <a href="{% url 'viewall_reservations' %}">All Reservations</a>
+                        {% endif %}
                         <form action="{% url 'logout' %}" method="POST" style="display:inline;">
                             {% csrf_token %}
                             <button type="submit">Log out</button>

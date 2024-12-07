@@ -17,7 +17,17 @@
                 <nav>
                     <!-- <a href="../ReservationComponent/ReservationPage.html">Reservations</a> -->
                     <a href="{% url 'reservation_page' %}">Reservations</a>
-                    <a href="{% url 'login_page' %}">Login</a>
+                    {% if loggedin == "true" %}
+                        {% if role == "employee" %}
+                            <a href="{% url 'viewall_reservations' %}">All Reservations</a>
+                        {% endif %}
+                        <form action="{% url 'logout' %}" method="POST" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit">Log out</button>
+                        </form>
+                    {% else %}
+                        <a href="{% url 'login_page' %}">Login</a>
+                    {% endif %}
                 </nav>
             </header>
             <!-- div and section could be redundant, but may separate out inner components more later -->

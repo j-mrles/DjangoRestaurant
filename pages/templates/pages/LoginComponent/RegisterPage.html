@@ -15,7 +15,7 @@
                 <h1><a href="{% url 'home' %}">Seahawk Restaurant</a></h1>
                 <nav>
                     <a href="{% url 'reservation_page'%}">Reservations</a>
-                    <a href="{% url 'login_page' %}">Login</a>
+                    <a href="{% url 'login_page' %}" id="currentpage">Login</a>
                 </nav>
             </header>
 
@@ -25,11 +25,11 @@
                     {% csrf_token %}
                     <div class="form-group">
                         <label for="firstname">First name:</label>
-                        <input type="text" id="firstname" name="firstname" required>
+                        <input type="text" id="firstname" name="firstname" pattern="[a-zA-Z\s\u002D]+" title="Only alphabetical and hyphen characters" required>
                     </div>
                     <div class="form-group">
                         <label for="lastname">Last name:</label>
-                        <input type="text" id="lastname" name="lastname" required>
+                        <input type="text" id="lastname" name="lastname" pattern="[a-zA-Z\s\u002D]+" title="Only alphabetical and hyphen characters" required>
                     </div>
                     <div class="form-group">
                         <label for="email">Email Address:</label>
