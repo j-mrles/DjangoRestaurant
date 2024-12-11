@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Seahawk Restaurant - Modify Reservation</title>
+    <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}">
     <link rel="stylesheet" href="{% static 'css/styles.css'%}">
     <link rel="stylesheet" href="{% static 'css/ModifyReservationPage.css'%}">
 </head>
@@ -20,10 +21,12 @@
             </div>
             {% endif %}
             <header>
-                <h1>Seahawk Restaurant - Modify Reservation</h1>
+                <h1>Seahawk Restaurant</h1>
                 <nav>
                 <a href="{% url 'reservation_page' %}">Reservations</a>
-                <a href="{% url 'viewall_reservations' %}">All Reservations</a>
+                {% if user and user.is_staff %}
+                    <a href="{% url 'viewall_reservations' %}">All Reservations</a>
+                {% endif %}
                 <form action="{% url 'logout' %}" method="POST" style="display:inline;">
                     {% csrf_token %}
                     <button type="submit">Log out</button>
@@ -74,16 +77,16 @@
                 <form action="{% url 'modify_reservation' reservation_id=reservation_id %}" method="POST" class="reservation">
                     {% csrf_token %}
                     <div class="result-item">
-                        <label for="table_statuses">Table Selection</label>
+                        <label for="table_statuses">Table Selection:</label>
                         <a href="{% url 'table_statuses' %}?modifying=True&reservation_id={{ reservation.id }}&date={{ date }}&time={{ time }}&selected_table={{ selected_table }}">Select Table and Time Here</a>
                     </div>
                     <div class="result-item">
-                        <label for="modified_date">Reservation Date</label>
+                        <label for="modified_date">New Date:</label>
                         <input type="date" id="modified_date" name="modified_date" {% if modified_date %} value="{{ modified_date }}" {% endif %} readonly required> 
                     </div>
                     <div class="result-item">
                         <!-- orig restime -->
-                        <label for="modified_time">Reservation Time</label>
+                        <label for="modified_time">New Time:</label>
                         <select id="modified_time" name="modified_time" required>
                             <option value="None" {% if not modified_time %} selected {% else %} disabled {% endif %}>Select From Selection Page</option>
                             <option value="16:00:00" {% if modified_time == "16:00:00" %} selected {% else %} disabled {% endif %}>4:00pm</option>
@@ -102,7 +105,7 @@
                         </select>
                     </div>
                     <div class="result-item">
-                        <label for="modified_tablenum">Table Number</label>
+                        <label for="modified_tablenum">New Table:</label>
                         <!-- Added value to pre-fill form, made read only -->
                         <input type="text" id="modified_tablenum" name="modified_tablenum" min="1" max="10" placeholder="Select From Selection Page" {% if modified_tablenum %} value="{{ modified_tablenum }}" {% endif %} readonly> 
                     </div>
@@ -110,11 +113,11 @@
                         <!-- make url change here below -> user should return to where they came from before modify, not viewall; may need larger change (url in modify currently reads viewall/modify)-->
                         {% if user.is_staff %}
                             <a href="{% url 'viewall_reservations' %}">
-                                <button type="button" name="cancel">Cancel</button>
+                                <button type="button" name="cancel">Back</button>
                             </a>
                         {% else %}
                             <a href="{% url 'reservation_page' %}">
-                                <button type="button" name="cancel">Cancel</button>
+                                <button type="button" name="cancel">Back</button>
                             </a>
                         {% endif %}
                         <button type="submit" name="submit" value="yes">Submit Changes</button>

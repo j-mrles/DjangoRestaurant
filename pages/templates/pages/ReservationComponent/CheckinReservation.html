@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Seahawk Restaurant - Check-in Reservations</title>
+    <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}">
     <link rel="stylesheet" href="{% static 'css/styles.css'%}">
     <link rel="stylesheet" href="{% static 'css/CheckinReservationPage.css'%}">
 </head>
@@ -21,12 +22,12 @@
             <header>
                 <h1>Seahawk Restaurant</h1>
                 <nav>
-                <a href="{% url 'reservation_page' %}">Reservations</a>
-                <a href="{% url 'viewall_reservations' %}" id="currentpage">All Reservations</a>
-                <form action="{% url 'logout' %}" method="POST" style="display:inline;">
-                    {% csrf_token %}
-                    <button type="submit">Log out</button>
-                </form>
+                    <a href="{% url 'reservation_page' %}">Reservations</a>
+                    <a href="{% url 'viewall_reservations' %}" id="currentpage">All Reservations</a>
+                    <form action="{% url 'logout' %}" method="POST" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit">Log out</button>
+                    </form>
                 </nav>  
             </header>
             <!-- res details -->
