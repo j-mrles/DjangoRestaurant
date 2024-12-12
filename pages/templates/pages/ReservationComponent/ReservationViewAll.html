@@ -23,17 +23,11 @@
                 <h1><a href="{% url 'home' %}">Seahawk Restaurant</a></h1>
                 <nav>
                 <a href="{% url 'reservation_page' %}">Reservations</a>
-                {% if loggedin == "true" %}
-                        {% if role == "employee" %}
-                            <a href="{% url 'viewall_reservations' %}" id="currentpage">All Reservations</a>
-                        {% endif %}
-                        <form action="{% url 'logout' %}" method="POST" style="display:inline;">
-                            {% csrf_token %}
-                            <button type="submit">Log out</button>
-                        </form>
-                    {% else %}
-                        <a href="{% url 'login_page' %}">Login</a>
-                    {% endif %}
+                <a href="{% url 'viewall_reservations' %}" id="currentpage">All Reservations</a>
+                <form action="{% url 'logout' %}" method="POST" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit">Log out</button>
+                </form>
                 </nav>  
             </header>
             <!-- Filter Criteria Box-->

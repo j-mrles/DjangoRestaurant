@@ -33,6 +33,16 @@
     text-align: center;
 }
 
+.instructions {
+    padding: 4px;
+    background: #c9c9c9;
+    border-radius: 5px;
+}
+
+.instructions p {
+    margin: 0px 3px;
+}
+
 .button a, button {
     padding: 4px;
     width: 30%;

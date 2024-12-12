@@ -273,7 +273,8 @@ def modify_reservation(request, reservation_id):
         'modifying': request.session.get('modifying', False),
         'modified_time': modified_time,
         'modified_date': modified_date,
-        'modified_tablenum': modified_tablenum
+        'modified_tablenum': modified_tablenum,
+        'user': User.objects.get(username=request.session.get('username')) if request.session.get('username') else None
         #'formatted_date': formatted_date,
         #'formatted_time': formatted_time
     })
@@ -436,7 +437,7 @@ def table_statuses(request):
     else:
         restime = time.fromisoformat(restime)
 
-    availability = tableAvailability(resdate, restime)
+    availability = tableAvailability(resdate, restime, res_id=original_reservation.id if modifying else None)
     tables = [
         {"number": 1, "capacity": 2, "availability": 'Available' if availability[0] else 'Unavailable'},
         {"number": 2, "capacity": 2, "availability": 'Available' if availability[1] else 'Unavailable'},

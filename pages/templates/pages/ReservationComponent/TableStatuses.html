@@ -35,6 +35,10 @@
                     {% endfor %}
                 </div>
                 {% endif %}
+                <div class="instructions">
+                    <p>Select date and time, then click "Check" to view available tables.</p>
+                    <p>Click table number of available table to select.</p>
+                </div>
                 <!--Search Form-->
                 <form method="GET" action="{% url 'table_statuses' %}" id="datetime">
                     <div class="form-group">

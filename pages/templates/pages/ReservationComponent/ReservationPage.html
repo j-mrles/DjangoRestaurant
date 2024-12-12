@@ -107,7 +107,7 @@
                 <button type="submit" form="reservation">Reserve</button>
             </section>
             <!-- Section that contains search button below the main form section -->
-             {% if loggedin == 'true' %}
+             {% if loggedin == 'true' and role == 'user' %}
                 <section class="userreservations">
                     <h3>Your Reservations</h3>
                     {% if reservations %}
@@ -130,7 +130,7 @@
                         <div class="noreservation"><p>You currently do not have any reservations</p></div>
                     {% endif %}
                 </section>
-            {% else %}
+            {% elif loggedin == 'false' and role == 'user' %}
             <div class="search-container">
                 <section class="search">
                     <h3>Already have a reservation?</h3>
