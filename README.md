@@ -1,6 +1,6 @@
 # Seahawk Restaurant Management System
 
-The Seahawk Restaurant Management System is designed to address the challenges of improper meat inventory management and enhance the customer experience through a sophisticated reservation system. This project includes two main modules: a **Smart Inventory Module** and a **Smart Reservation Module**.
+The Seahawk Restaurant Management System is designed to address the challenges of improper meat inventory management and enhance the customer experience through a sophisticated reservation system. This project includes a main module: **Smart Reservation Module**.
 
 ## Features
 
